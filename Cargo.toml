@@ -1,0 +1,12 @@
+[package]
+name = "todoco"
+version = "0.1.0"
+authors = ["Jan Meischner <jan.meischner@daparto.com>"]
+edition = "2018"
+
+[dependencies]
+ansi_term = "^0.11.0"
+clap = "^2.33.0"
+gitignore = "^1.0.6"
+glob = "^0.3.0"
+toml = "^0.4.2"
