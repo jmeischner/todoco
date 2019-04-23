@@ -1,12 +1,13 @@
 mod scan;
 
-pub use scan::data_structures::Project;
-pub use scan::data_structures::List;
-pub use scan::data_structures::Todo;
+pub use scan::sourcefile::SourceFile;
+pub use scan::list::List;
+pub use scan::project::Project;
+pub use scan::todo::Todo;
 
 pub fn scan(root_dir: String) -> Project {
     Project {
         name: String::from("ToDoco"),
-        lists: vec!(),
+        lists: vec![],
     }
 }
