@@ -2,7 +2,6 @@ use glob::glob_with;
 use glob::MatchOptions;
 use glob::{Paths, PatternError};
 use regex::Regex;
-use std::ffi::OsString;
 use std::fs::File;
 use std::io::Result as IOResult;
 use std::io::{BufRead, BufReader, Lines};
@@ -25,9 +24,9 @@ pub fn extract_todos_from_files(files: Vec<SourceFile>) -> IOResult<Vec<Todo>> {
     let mut todos: Vec<Todo> = vec![];
 
     for file in files {
-        let content = read_lines_of_file(&file)?;
-        let fileTodos = extract_todos_from_content(content, file);
-        todos.extend(fileTodos);
+        let lines = read_lines_of_file(&file)?;
+        let file_todos = extract_todos_from_content(lines, file);
+        todos.extend(file_todos);
     }
 
     Ok(todos)
@@ -47,14 +46,18 @@ fn build_file_from_path(paths: Paths) -> Vec<SourceFile> {
     paths
         .filter_map(|glob_res| {
             if let Ok(path) = glob_res {
-                if let (Some(name), Some(full_path)) = (path.file_name(), path.to_str()) {
-                    if let Some(filename) = name.to_str() {
-                        Some(SourceFile::new(
-                            String::from(filename),
-                            String::from(full_path),
-                        ))
+                if path.is_file() {
+                    if let (Some(name), Some(full_path)) = (path.file_name(), path.to_str()) {
+                        if let Some(filename) = name.to_str() {
+                            Some(SourceFile::new(
+                                String::from(filename),
+                                String::from(full_path),
+                            ))
+                        } else {
+                            // Todo: handle Result appropriatly
+                            None
+                        }
                     } else {
-                        // Todo: handle Result appropriatly
                         None
                     }
                 } else {
@@ -79,10 +82,17 @@ fn extract_todos_from_content(lines: Lines<BufReader<File>>, file: SourceFile) -
     let todo_regex = Regex::new(r"(?i:todo+:?\s?)(?P<todo>.*$)").unwrap();
 
     for (lnr, line) in lines.enumerate() {
-        for capture in todo_regex.captures_iter(&line.unwrap()) {
-            let found_todo = Todo::new(String::from(&capture["todo"]), file.clone(), lnr + 1);
-            todos.push(found_todo)
-        }
+        match line {
+            Ok(l) => {
+                for capture in todo_regex.captures_iter(&l) {
+                    let found_todo =
+                        Todo::new(String::from(&capture["todo"]), file.clone(), lnr + 1);
+                    todos.push(found_todo)
+                }
+            }
+            // Todo: handle not valid utf-8 appropriatly
+            Err(_e) => break,
+        };
     }
 
     todos
