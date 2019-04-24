@@ -6,4 +6,6 @@ fn main() {
         .author("Jan Meischner <jan.meischner@googlemail.com>")
         .about("Extracts Todos from Code")
         .get_matches();
+
+    todoco::scan("**/*.*");
 }

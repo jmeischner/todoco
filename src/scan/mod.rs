@@ -15,6 +15,24 @@ pub mod todo;
 use sourcefile::SourceFile;
 use todo::Todo;
 
+pub fn get_files(dir: &str) -> Result<Vec<SourceFile>, PatternError> {
+    let paths = get_paths_from_dir(dir)?;
+    Ok(build_file_from_path(paths))
+}
+
+// Todo: Parallel Extraction
+pub fn extract_todos_from_files(files: Vec<SourceFile>) -> IOResult<Vec<Todo>> {
+    let mut todos: Vec<Todo> = vec![];
+
+    for file in files {
+        let content = read_lines_of_file(&file)?;
+        let fileTodos = extract_todos_from_content(content, file);
+        todos.extend(fileTodos);
+    }
+
+    Ok(todos)
+}
+
 fn get_paths_from_dir(dir: &str) -> Result<Paths, PatternError> {
     let options = MatchOptions {
         case_sensitive: false,
@@ -48,19 +66,6 @@ fn build_file_from_path(paths: Paths) -> Vec<SourceFile> {
             }
         })
         .collect()
-}
-
-// Todo: Parallel Extraction
-fn extract_todos_from_files(files: Vec<SourceFile>) -> IOResult<Vec<Todo>> {
-    let mut todos: Vec<Todo> = vec![];
-
-    for file in files {
-        let content = read_lines_of_file(&file)?;
-        let fileTodos = extract_todos_from_content(content, file);
-        todos.extend(fileTodos);
-    }
-
-    Ok(todos)
 }
 
 fn read_lines_of_file(file: &SourceFile) -> IOResult<Lines<BufReader<File>>> {
