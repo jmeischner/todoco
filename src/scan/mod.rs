@@ -30,10 +30,15 @@ fn build_file_from_path(paths: Paths) -> Vec<SourceFile> {
         .filter_map(|glob_res| {
             if let Ok(path) = glob_res {
                 if let (Some(name), Some(full_path)) = (path.file_name(), path.to_str()) {
-                    Some(SourceFile {
-                        name: OsString::from(name),
-                        path: OsString::from(full_path),
-                    })
+                    if let Some(filename) = name.to_str() {
+                        Some(SourceFile::new(
+                            String::from(filename),
+                            String::from(full_path),
+                        ))
+                    } else {
+                        // Todo: handle Result appropriatly
+                        None
+                    }
                 } else {
                     None
                 }
@@ -59,7 +64,7 @@ fn extract_todos_from_files(files: Vec<SourceFile>) -> IOResult<Vec<Todo>> {
 }
 
 fn read_lines_of_file(file: &SourceFile) -> IOResult<Lines<BufReader<File>>> {
-    let f = File::open(*file.path.to_str())?;
+    let f = File::open(&file.path)?;
     let reader = BufReader::new(f).lines();
     Ok(reader)
 }
@@ -69,12 +74,9 @@ fn extract_todos_from_content(lines: Lines<BufReader<File>>, file: SourceFile) -
     let todo_regex = Regex::new(r"(?i:todo+:?\s?)(?P<todo>.*$)").unwrap();
 
     for (lnr, line) in lines.enumerate() {
-        if let Some(todo) = todo_regex.find(&line.unwrap()) {
-            todos.push(Todo {
-                text: String::from(todo.as_str()),
-                line: lnr,
-                file: file,
-            })
+        for capture in todo_regex.captures_iter(&line.unwrap()) {
+            let found_todo = Todo::new(String::from(&capture["todo"]), file.clone(), lnr + 1);
+            todos.push(found_todo)
         }
     }
 
@@ -85,7 +87,7 @@ fn extract_todos_from_content(lines: Lines<BufReader<File>>, file: SourceFile) -
 #[cfg(test)]
 mod tests {
     use super::SourceFile;
-    use std::ffi::OsString;
+    use super::Todo;
     use std::path::PathBuf;
 
     #[test]
@@ -107,9 +109,22 @@ mod tests {
         let test_path = super::get_paths_from_dir("env_tests/mod_scan/*.txt").unwrap();
         let files = super::build_file_from_path(test_path);
         let expected = vec![SourceFile {
-            name: OsString::from("file1.txt"),
-            path: OsString::from("env_tests/mod_scan/file1.txt"),
+            name: String::from("file1.txt"),
+            path: String::from("env_tests/mod_scan/file1.txt"),
         }];
         assert_eq!(files, expected)
+    }
+
+    #[test]
+    fn extract_todo_from_test_file() {
+        let test_file = SourceFile::new(
+            String::from("file1.txt"),
+            String::from("env_tests/mod_scan/file1.txt"),
+        );
+        let expected_todo = vec![Todo::new(String::from("Test"), test_file.clone(), 1)];
+
+        let todo = super::extract_todos_from_files(vec![test_file]).unwrap();
+
+        assert_eq!(todo, expected_todo)
     }
 }

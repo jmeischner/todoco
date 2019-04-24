@@ -1,9 +1,16 @@
-use std::ffi::OsString;
-
 #[derive(Debug, Clone)]
 pub struct SourceFile {
-    pub name: OsString,
-    pub path: OsString,
+    pub name: String,
+    pub path: String,
+}
+
+impl SourceFile {
+    pub fn new(name: String, path: String) -> SourceFile {
+        SourceFile {
+            name: name,
+            path: path,
+        }
+    }
 }
 
 impl PartialEq for SourceFile {
