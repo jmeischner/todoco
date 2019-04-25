@@ -6,13 +6,15 @@ use std::fs::File;
 use std::io::Result as IOResult;
 use std::io::{BufRead, BufReader, Lines};
 
+use list::List;
+use project::Project;
+use sourcefile::SourceFile;
+use todo::Todo;
+
 pub mod list;
 pub mod project;
 pub mod sourcefile;
 pub mod todo;
-
-use sourcefile::SourceFile;
-use todo::Todo;
 
 pub fn get_files(dir: &str) -> Result<Vec<SourceFile>, PatternError> {
     let paths = get_paths_from_dir(dir)?;
@@ -30,6 +32,12 @@ pub fn extract_todos_from_files(files: Vec<SourceFile>) -> IOResult<Vec<Todo>> {
     }
 
     Ok(todos)
+}
+
+pub fn build_project(todos: Vec<Todo>) -> Project {
+    let list = List::new(String::from("All"), todos);
+    let lists = vec![list];
+    Project::new(String::from("ToDoCo"), lists)
 }
 
 fn get_paths_from_dir(dir: &str) -> Result<Paths, PatternError> {
@@ -79,7 +87,7 @@ fn read_lines_of_file(file: &SourceFile) -> IOResult<Lines<BufReader<File>>> {
 
 fn extract_todos_from_content(lines: Lines<BufReader<File>>, file: SourceFile) -> Vec<Todo> {
     let mut todos: Vec<Todo> = vec![];
-    let todo_regex = Regex::new(r"(?i:todo+:?\s?)(?P<todo>.*$)").unwrap();
+    let todo_regex = Regex::new(r"(?i:todo(:\s*|\s+))(?P<todo>.*$)").unwrap();
 
     for (lnr, line) in lines.enumerate() {
         match line {
@@ -136,10 +144,11 @@ mod tests {
             String::from("file1.txt"),
             String::from("env_tests/mod_scan/file1.txt"),
         );
-        let expected_todo = vec![Todo::new(String::from("Test"), test_file.clone(), 1)];
+        let expected_todo1 = Todo::new(String::from("Test"), test_file.clone(), 1);
+        let expected_todo2 = Todo::new(String::from("Test"), test_file.clone(), 2);
 
         let todo = super::extract_todos_from_files(vec![test_file]).unwrap();
 
-        assert_eq!(todo, expected_todo)
+        assert_eq!(todo, vec![expected_todo1, expected_todo2])
     }
 }

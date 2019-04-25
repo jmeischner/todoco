@@ -19,6 +19,7 @@ fn main() {
 
     if let Some(matches) = matches.subcommand_matches("scan") {
         let dir = matches.value_of("DIR").unwrap();
-        todoco::scan(dir);
+        let project = todoco::scan(dir);
+        println!("{:?}", project);
     }
 }
