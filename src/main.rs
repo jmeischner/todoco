@@ -17,11 +17,16 @@ fn main() {
                         .required(true),
                 ),
         )
+        .subcommand(SubCommand::with_name("init").about("Initialize new ToDoCo project"))
         .get_matches();
 
     if let Some(matches) = matches.subcommand_matches("scan") {
         let dir = matches.value_of("DIR").unwrap();
         let project = todoco::scan(dir);
-        ui::print_project(project);
+        ui::print_todo_list::print_project(project);
+    }
+
+    if let Some(matches) = matches.subcommand_matches("init") {
+        let answers = ui::dialog_config::ask_for_config();
     }
 }
