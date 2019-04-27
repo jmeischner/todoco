@@ -1,5 +1,7 @@
 use clap::{App, Arg, SubCommand};
 
+mod ui;
+
 fn main() {
     // Todo: create *cli.yml* -- see docs
     let matches = App::new("ToDoCo")
@@ -20,6 +22,6 @@ fn main() {
     if let Some(matches) = matches.subcommand_matches("scan") {
         let dir = matches.value_of("DIR").unwrap();
         let project = todoco::scan(dir);
-        println!("{:?}", project);
+        ui::print_project(project);
     }
 }
