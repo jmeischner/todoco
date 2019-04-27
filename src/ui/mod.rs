@@ -1,11 +1,11 @@
-use ansi_term::Color::{Blue, Cyan, Green};
+use ansi_term::Color::{Blue, Cyan, Green, Yellow};
 
 use todoco::{List, Project, Todo};
 
 pub fn print_project(project: Project) {
     hbar();
-
-    println!("{}", Blue.underline().paint(&project.name));
+    let project_title = format!("{}", Blue.bold().underline().paint(&project.name));
+    println!("{:^80}", project_title);
 
     for list in &project.lists {
         print_list(&list);
@@ -38,8 +38,8 @@ fn print_todo(todo: &Todo) {
     println!("{}{} {}", tab(2), Green.paint("◗"), todo_text);
 
     // Todo: make configurable
-    // let path_text = format!("at {}:{}", todo.file.path, todo.line);
-    // println!("{}{}", tab(3), Yellow.paint(path_text));
+    let path_text = format!("at {}:{}", todo.file.path, todo.line);
+    println!("{}{}", tab(3), Yellow.paint(path_text));
 }
 
 fn print_summary(project: Project) {
