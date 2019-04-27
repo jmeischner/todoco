@@ -98,7 +98,7 @@ fn extract_todos_from_content(lines: Lines<BufReader<File>>, file: SourceFile) -
     let mut todos: Vec<Todo> = vec![];
     // Todo: Add configurable todo regex
     // Todo: Add regex for all kind of comment begins
-    let todo_regex = Regex::new(r"(?i:todo(:\s*|\s+))(?P<todo>.*$)").unwrap();
+    let todo_regex = Regex::new(r"(?i://\s*todo(:\s*|\s+))(?P<todo>.*$)").unwrap();
 
     for (lnr, line) in lines.enumerate() {
         match line {
