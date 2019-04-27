@@ -5,6 +5,7 @@ pub struct Todo {
     pub text: String,
     pub file: SourceFile,
     pub line: usize,
+    // Todo: Save next few lines for preview
 }
 
 impl Todo {
