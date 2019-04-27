@@ -40,6 +40,15 @@ pub fn build_project(todos: Vec<Todo>) -> Project {
     Project::new(String::from("ToDoCo"), lists)
 }
 
+pub fn map_dir_to_glob(dir: &str) -> String {
+    // Todo: Check Windows Support
+    if dir.ends_with("/") || dir.ends_with("/") {
+        format!("{}**/*.*", dir)
+    } else {
+        format!("{}/**/*.*", dir)
+    }
+}
+
 fn get_paths_from_dir(dir: &str) -> Result<Paths, PatternError> {
     let options = MatchOptions {
         case_sensitive: false,

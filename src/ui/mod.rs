@@ -32,6 +32,7 @@ fn print_list(list: &List) {
 }
 
 fn print_todo(todo: &Todo) {
+    // Todo: break longer texts
     let todo_text = format!("{}", todo.text);
 
     println!("{}{} {}", tab(2), Green.paint("◗"), todo_text);
