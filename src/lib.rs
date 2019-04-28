@@ -1,3 +1,5 @@
+use std::io::Result as IOResult;
+
 pub mod init;
 pub mod scan;
 
@@ -15,8 +17,7 @@ pub fn scan(root_dir: &str) -> Project {
     scan::build_project(todos.unwrap())
 }
 
-pub fn init(config: Config) {
-    config.write();
-    let c = Config::get("todoco.toml").unwrap();
-    println!("{}", c.name);
+pub fn init(config: Config) -> IOResult<()> {
+    config.write()?;
+    Ok(())
 }

@@ -27,8 +27,10 @@ fn main() {
         ui::print_todo_list::print_project(project);
     }
 
-    if let Some(matches) = matches.subcommand_matches("init") {
+    if let Some(_matches) = matches.subcommand_matches("init") {
         let config = ui::dialog_config::ask_for_config().unwrap();
-        todoco::init(config);
+        if let Err(e) = todoco::init(config) {
+            eprintln!("{}", e);
+        }
     }
 }

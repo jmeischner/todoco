@@ -23,7 +23,7 @@ impl Config {
 
         match result {
             Ok(config) => Ok(config),
-            Err(e) => Err(IOError::new(
+            Err(_) => Err(IOError::new(
                 ErrorKind::InvalidData,
                 "Config file contains invalid Toml data.",
             )),
