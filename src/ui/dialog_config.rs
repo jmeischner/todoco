@@ -1,15 +1,11 @@
 use dialoguer::Input;
 use std::io::Result as IOResult;
+use todoco::Config;
 
-// Todo: Use Theme
-pub fn ask_for_config() {
+// Todo: Use dialoguer Theme
+pub fn ask_for_config() -> IOResult<Config> {
     // Todo: Default value should be directory name
-    let project_result: IOResult<String> = Input::new().with_prompt("project name").interact();
+    let project_name = Input::new().with_prompt("project name").interact()?;
 
-    if let Ok(p) = project_result {
-        println!("{}", p);
-    } else {
-        println!("Please answer the question:");
-        ask_for_config();
-    }
+    Ok(Config::new(project_name))
 }

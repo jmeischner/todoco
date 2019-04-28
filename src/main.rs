@@ -1,4 +1,5 @@
 use clap::{App, Arg, SubCommand};
+use todoco;
 
 mod ui;
 
@@ -27,6 +28,7 @@ fn main() {
     }
 
     if let Some(matches) = matches.subcommand_matches("init") {
-        let answers = ui::dialog_config::ask_for_config();
+        let config = ui::dialog_config::ask_for_config().unwrap();
+        todoco::init(config);
     }
 }

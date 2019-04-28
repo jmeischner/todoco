@@ -1,5 +1,7 @@
+pub mod init;
 pub mod scan;
 
+pub use init::config::Config;
 pub use scan::list::List;
 pub use scan::project::Project;
 pub use scan::sourcefile::SourceFile;
@@ -11,4 +13,10 @@ pub fn scan(root_dir: &str) -> Project {
     let files = scan::get_files(&glob);
     let todos = scan::extract_todos_from_files(files.unwrap());
     scan::build_project(todos.unwrap())
+}
+
+pub fn init(config: Config) {
+    config.write();
+    let c = Config::get("todoco.toml").unwrap();
+    println!("{}", c.name);
 }
