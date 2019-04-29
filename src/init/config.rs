@@ -15,7 +15,7 @@ impl Config {
         Config { name: name }
     }
 
-    pub fn get(path: &Path) -> IOResult<Config> {
+    pub fn get_from_dir(path: &Path) -> IOResult<Config> {
         // Todo: get config file name from app.config
         let mut path = path.to_path_buf();
         path.push("todoco.toml");
@@ -72,7 +72,7 @@ mod tests {
 
     #[test]
     fn get_config_from_file() {
-        let config = Config::get(Path::new("env_tests/mod_init")).unwrap();
+        let config = Config::get_from_dir(Path::new("env_tests/mod_init")).unwrap();
         let expected = Config::new(String::from("test"));
         assert_eq!(config.name, expected.name);
     }

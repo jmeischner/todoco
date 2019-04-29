@@ -13,7 +13,7 @@ pub use scan::todo::Todo;
 // Todo: add error propagation
 pub fn scan(path: PathBuf) -> Result<Project, &'static str> {
     if let Some(root_dir) = path.to_str() {
-        let config = match Config::get(&path) {
+        let config = match Config::get_from_dir(&path) {
             Ok(c) => c,
             Err(_) => init::get_default_config(&path),
         };
