@@ -19,3 +19,18 @@ fn extract_current_directory_name(path: &Path) -> Option<&str> {
         None
     }
 }
+
+// ~~~~~~~~~~~~~~~~~~~~ TESTS ~~~~~~~~~~~~~~~~~~~~ //
+#[cfg(test)]
+mod tests {
+    use super::Config;
+    use std::path::Path;
+
+    #[test]
+    fn get_default_config_with_path() {
+        let result = super::get_default_config(Path::new("/here/it/is"));
+        let expected = Config::new(String::from("is"));
+
+        assert_eq!(result.name, expected.name);
+    }
+}
