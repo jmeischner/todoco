@@ -1,7 +1,7 @@
 #[macro_use]
 extern crate clap;
 
-use clap::App;
+use clap::{App, ArgMatches};
 use std::env;
 use std::path::PathBuf;
 
@@ -15,13 +15,20 @@ fn main() {
         .version(clap::crate_version!())
         .get_matches();
 
+    handle_scan(&matches);
+    handle_init(&matches);
+}
+
+fn handle_scan(matches: &ArgMatches) {
     if let Some(matches) = matches.subcommand_matches("scan") {
         let dir = matches.value_of("DIR").unwrap();
         let path = PathBuf::from(dir);
         let project = todoco::scan(path).unwrap();
         ui::print_todo_list::print_project(project);
     }
+}
 
+fn handle_init(matches: &ArgMatches) {
     if let Some(_matches) = matches.subcommand_matches("init") {
         if let Ok(cur_dir) = env::current_dir() {
             let config = ui::dialog_config::ask_for_config().unwrap();
