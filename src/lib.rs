@@ -1,4 +1,5 @@
 use std::io::Result as IOResult;
+use std::path::PathBuf;
 
 pub mod init;
 pub mod scan;
@@ -10,14 +11,22 @@ pub use scan::sourcefile::SourceFile;
 pub use scan::todo::Todo;
 
 // Todo: add error propagation
-pub fn scan(root_dir: &str) -> Project {
-    let glob = scan::map_dir_to_glob(root_dir);
-    let files = scan::get_files(&glob);
-    let todos = scan::extract_todos_from_files(files.unwrap());
-    scan::build_project(todos.unwrap())
+pub fn scan(path: PathBuf) -> Result<Project, &'static str> {
+    if let Some(root_dir) = path.to_str() {
+        let config = match Config::get(&path) {
+            Ok(c) => c,
+            Err(_) => init::get_default_config(&path),
+        };
+        let glob = scan::map_dir_to_glob(root_dir);
+        let files = scan::get_files(&glob);
+        let todos = scan::extract_todos_from_files(files.unwrap());
+        Ok(scan::build_project(todos.unwrap(), config))
+    } else {
+        Err("It was not possible to handle given path.")
+    }
 }
 
-pub fn init(config: Config) -> IOResult<()> {
-    config.write()?;
+pub fn init(config: Config, path: PathBuf) -> IOResult<()> {
+    config.write(&path)?;
     Ok(())
 }

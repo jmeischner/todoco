@@ -1,4 +1,6 @@
 use clap::{App, Arg, SubCommand};
+use std::env;
+use std::path::PathBuf;
 use todoco;
 
 mod ui;
@@ -23,14 +25,19 @@ fn main() {
 
     if let Some(matches) = matches.subcommand_matches("scan") {
         let dir = matches.value_of("DIR").unwrap();
-        let project = todoco::scan(dir);
+        let path = PathBuf::from(dir);
+        let project = todoco::scan(path).unwrap();
         ui::print_todo_list::print_project(project);
     }
 
     if let Some(_matches) = matches.subcommand_matches("init") {
-        let config = ui::dialog_config::ask_for_config().unwrap();
-        if let Err(e) = todoco::init(config) {
-            eprintln!("{}", e);
+        if let Ok(cur_dir) = env::current_dir() {
+            let config = ui::dialog_config::ask_for_config().unwrap();
+            if let Err(e) = todoco::init(config, cur_dir) {
+                eprintln!("{}", e);
+            }
+        } else {
+            eprintln!("Could not detect current directory.")
         }
     }
 }

@@ -6,6 +6,7 @@ use std::fs::File;
 use std::io::Result as IOResult;
 use std::io::{BufRead, BufReader, Lines};
 
+use crate::Config;
 use list::List;
 use project::Project;
 use sourcefile::SourceFile;
@@ -34,10 +35,10 @@ pub fn extract_todos_from_files(files: Vec<SourceFile>) -> IOResult<Vec<Todo>> {
     Ok(todos)
 }
 
-pub fn build_project(todos: Vec<Todo>) -> Project {
+pub fn build_project(todos: Vec<Todo>, config: Config) -> Project {
     let list = List::new(String::from("All"), todos);
     let lists = vec![list];
-    Project::new(String::from("ToDoCo"), lists)
+    Project::new(config.name, lists)
 }
 
 pub fn map_dir_to_glob(dir: &str) -> String {

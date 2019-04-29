@@ -2,6 +2,7 @@ use serde::{Deserialize, Serialize};
 use std::fs::File;
 use std::io::{BufReader, Read, Write};
 use std::io::{Error as IOError, ErrorKind, Result as IOResult};
+use std::path::Path;
 use toml;
 
 #[derive(Serialize, Deserialize)]
@@ -14,7 +15,9 @@ impl Config {
         Config { name: name }
     }
 
-    pub fn get(path: &str) -> IOResult<Config> {
+    pub fn get(path: &Path) -> IOResult<Config> {
+        // Todo: get config file name from app.config
+        path.to_path_buf().push("todoco.toml");
         let file = File::open(path)?;
         let mut buf_reader = BufReader::new(file);
         let mut contents = String::new();
@@ -30,12 +33,13 @@ impl Config {
         }
     }
 
-    pub fn write(&self) -> IOResult<()> {
+    pub fn write(&self, path: &Path) -> IOResult<()> {
         let config_text =
             toml::to_string_pretty(&self).expect("It was not possible to serialize configuration.");
 
         // Todo: get filename from app.config
-        let mut file = File::create("todoco.toml")?;
+        path.to_path_buf().push("todoco.toml");
+        let mut file = File::create(path)?;
 
         file.write_all(config_text.as_bytes())?;
 
@@ -49,11 +53,12 @@ mod tests {
     use super::Config;
     use std::fs::{remove_file, File};
     use std::io::Read;
+    use std::path::Path;
 
     #[test]
     fn write_config_test() {
         let config = Config::new(String::from("bla"));
-        config.write();
+        config.write(&Path::new("todoco.toml"));
         let mut content = String::new();
         File::open("todoco.toml")
             .unwrap()
