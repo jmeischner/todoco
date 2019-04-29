@@ -1,0 +1,12 @@
+name: ToDoCo
+author: Jan Meischner <jan.meischner@googlemail.com>
+about: Extracts Todos from Code
+subcommands:
+  - scan:
+      about: Scan directory for ToDo comments
+      args:
+        - DIR:
+            help: Path to project which should be scanned.
+            required: true
+  - init:
+      about: Initialize new ToDoCo project
