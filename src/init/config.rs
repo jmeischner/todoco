@@ -5,6 +5,8 @@ use std::io::{Error as IOError, ErrorKind, Result as IOResult};
 use std::path::Path;
 use toml;
 
+use crate::appconfig::AppConfig;
+
 #[derive(Serialize, Deserialize)]
 pub struct Config {
     pub name: String,
@@ -16,9 +18,9 @@ impl Config {
     }
 
     pub fn get_from_dir(path: &Path) -> IOResult<Config> {
-        // Todo: get config file name from app.config
+        let config = AppConfig::get();
         let mut path = path.to_path_buf();
-        path.push("todoco.toml");
+        path.push(config.project_file);
         let file = File::open(path)?;
         let mut buf_reader = BufReader::new(file);
         let mut contents = String::new();
@@ -38,9 +40,9 @@ impl Config {
         let config_text =
             toml::to_string_pretty(&self).expect("It was not possible to serialize configuration.");
 
-        // Todo: get filename from app.config
+        let config = AppConfig::get();
         let mut path = path.to_path_buf();
-        path.push("todoco.toml");
+        path.push(config.project_file);
         let mut file = File::create(path)?;
 
         file.write_all(config_text.as_bytes())?;
@@ -53,22 +55,7 @@ impl Config {
 #[cfg(test)]
 mod tests {
     use super::Config;
-    use std::fs::{remove_file, File};
-    use std::io::Read;
     use std::path::Path;
-
-    #[test]
-    fn write_config_test() {
-        let config = Config::new(String::from("bla"));
-        config.write(&Path::new("."));
-        let mut content = String::new();
-        File::open("todoco.toml")
-            .unwrap()
-            .read_to_string(&mut content);
-        let expected = "name = \'bla\'\n";
-        assert_eq!(content, expected);
-        remove_file("todoco.toml");
-    }
 
     #[test]
     fn get_config_from_file() {

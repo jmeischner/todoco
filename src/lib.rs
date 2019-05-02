@@ -1,6 +1,7 @@
 use std::io::Result as IOResult;
 use std::path::PathBuf;
 
+pub mod appconfig;
 pub mod init;
 pub mod scan;
 
