@@ -2,6 +2,7 @@ use config::Config;
 use std::path::Path;
 
 pub mod config;
+pub mod project;
 
 pub fn get_default_config(path: &Path) -> Config {
     let cur_dir = match extract_current_directory_name(path) {
@@ -9,7 +10,7 @@ pub fn get_default_config(path: &Path) -> Config {
         None => "Your Project",
     };
 
-    Config::new(String::from(cur_dir))
+    Config::default(cur_dir)
 }
 
 fn extract_current_directory_name(path: &Path) -> Option<&str> {

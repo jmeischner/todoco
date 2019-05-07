@@ -5,16 +5,28 @@ use std::io::{Error as IOError, ErrorKind, Result as IOResult};
 use std::path::Path;
 use toml;
 
+use super::project::Project;
+
 use crate::appconfig::AppConfig;
 
 #[derive(Serialize, Deserialize)]
 pub struct Config {
-    pub name: String,
+    pub project: Project,
 }
 
 impl Config {
-    pub fn new(name: String) -> Config {
-        Config { name: name }
+    pub fn new(p_name: String, p_use_gitignore: bool) -> Config {
+        Config {
+            project: Project {
+                name: p_name,
+                use_gitignore: p_use_gitignore,
+            },
+        }
+    }
+
+    pub fn default(dir: &str) -> Config {
+        let project = Project::new(String::from(dir), true);
+        Config { project: project }
     }
 
     pub fn get_from_dir(path: &Path) -> IOResult<Config> {

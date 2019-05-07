@@ -37,7 +37,7 @@ pub fn extract_todos_from_files(files: Vec<SourceFile>) -> IOResult<Vec<Todo>> {
 pub fn build_project(todos: Vec<Todo>, config: Config) -> Project {
     let list = List::new(String::from("All"), todos);
     let lists = vec![list];
-    Project::new(config.name, lists)
+    Project::new(config.project.name, lists)
 }
 
 fn get_path_walker_from_dir(dir: &str) -> Walk {

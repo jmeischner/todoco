@@ -1,1 +1,3 @@
+[project]
 name = 'todoco'
+use_gitignore = true
