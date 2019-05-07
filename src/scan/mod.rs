@@ -1,6 +1,4 @@
-use glob::glob_with;
-use glob::MatchOptions;
-use glob::{Paths, PatternError};
+use ignore::{Walk, WalkBuilder};
 use regex::Regex;
 use std::fs::File;
 use std::io::Result as IOResult;
@@ -17,9 +15,10 @@ pub mod project;
 pub mod sourcefile;
 pub mod todo;
 
-pub fn get_files(dir: &str) -> Result<Vec<SourceFile>, PatternError> {
-    let paths = get_paths_from_dir(dir)?;
-    Ok(build_file_from_path(paths))
+pub fn get_files(dir: &str) -> Vec<SourceFile> {
+    // Todo: If no files were found, then give user output
+    let paths = get_path_walker_from_dir(dir);
+    build_file_from_path(paths)
 }
 
 // Todo: Parallel Extraction
@@ -41,29 +40,16 @@ pub fn build_project(todos: Vec<Todo>, config: Config) -> Project {
     Project::new(config.name, lists)
 }
 
-pub fn map_dir_to_glob(dir: &str) -> String {
-    // Todo: Check Windows Support
-    if dir.ends_with("/") || dir.ends_with("/") {
-        format!("{}**/*.*", dir)
-    } else {
-        format!("{}/**/*.*", dir)
-    }
+fn get_path_walker_from_dir(dir: &str) -> Walk {
+    let walker = WalkBuilder::new(dir);
+    walker.build()
 }
 
-fn get_paths_from_dir(dir: &str) -> Result<Paths, PatternError> {
-    let options = MatchOptions {
-        case_sensitive: false,
-        require_literal_separator: false,
-        require_literal_leading_dot: false,
-    };
-
-    glob_with(dir, options)
-}
-
-fn build_file_from_path(paths: Paths) -> Vec<SourceFile> {
+fn build_file_from_path(paths: Walk) -> Vec<SourceFile> {
     paths
-        .filter_map(|glob_res| {
-            if let Ok(path) = glob_res {
+        .filter_map(|direntry| {
+            if let Ok(entry) = direntry {
+                let path = entry.path();
                 if path.is_file() {
                     if let (Some(name), Some(full_path)) = (path.file_name(), path.to_str()) {
                         if let Some(filename) = name.to_str() {
@@ -127,21 +113,21 @@ mod tests {
 
     #[test]
     fn find_paths_from_dir() {
-        for p in super::get_paths_from_dir("env_tests/mod_scan/*.txt").unwrap() {
+        for p in super::get_path_walker_from_dir("env_tests/mod_scan/").skip(1) {
             if let Ok(path) = p {
                 let mut expected_path = PathBuf::new();
                 expected_path.push("env_tests");
                 expected_path.push("mod_scan");
                 expected_path.push("file1");
                 expected_path.set_extension("txt");
-                assert_eq!(path, expected_path)
+                assert_eq!(path.path(), expected_path)
             }
         }
     }
 
     #[test]
     fn create_file_vec_from_path() {
-        let test_path = super::get_paths_from_dir("env_tests/mod_scan/*.txt").unwrap();
+        let test_path = super::get_path_walker_from_dir("env_tests/mod_scan/");
         let files = super::build_file_from_path(test_path);
         let expected = vec![SourceFile {
             name: String::from("file1.txt"),

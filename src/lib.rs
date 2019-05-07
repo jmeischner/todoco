@@ -18,9 +18,9 @@ pub fn scan(path: PathBuf) -> Result<Project, &'static str> {
             Ok(c) => c,
             Err(_) => init::get_default_config(&path),
         };
-        let glob = scan::map_dir_to_glob(root_dir);
-        let files = scan::get_files(&glob);
-        let todos = scan::extract_todos_from_files(files.unwrap());
+
+        let files = scan::get_files(root_dir);
+        let todos = scan::extract_todos_from_files(files);
         Ok(scan::build_project(todos.unwrap(), config))
     } else {
         Err("It was not possible to handle given path.")
