@@ -19,7 +19,7 @@ pub fn scan(path: PathBuf) -> Result<Project, &'static str> {
             Err(_) => init::get_default_config(&path),
         };
 
-        let files = scan::get_files(root_dir);
+        let files = scan::get_files(root_dir, &config);
         let todos = scan::extract_todos_from_files(files);
         Ok(scan::build_project(todos.unwrap(), config))
     } else {

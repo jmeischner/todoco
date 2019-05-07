@@ -15,9 +15,9 @@ pub mod project;
 pub mod sourcefile;
 pub mod todo;
 
-pub fn get_files(dir: &str) -> Vec<SourceFile> {
+pub fn get_files(dir: &str, config: &Config) -> Vec<SourceFile> {
     // Todo: If no files were found, then give user output
-    let paths = get_path_walker_from_dir(dir);
+    let paths = get_path_walker_from_dir(dir, config);
     build_file_from_path(paths)
 }
 
@@ -40,8 +40,9 @@ pub fn build_project(todos: Vec<Todo>, config: Config) -> Project {
     Project::new(config.project.name, lists)
 }
 
-fn get_path_walker_from_dir(dir: &str) -> Walk {
-    let walker = WalkBuilder::new(dir);
+fn get_path_walker_from_dir(dir: &str, config: &Config) -> Walk {
+    let mut walker = WalkBuilder::new(dir);
+    walker.git_ignore(config.project.use_gitignore);
     walker.build()
 }
 
