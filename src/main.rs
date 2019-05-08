@@ -34,6 +34,8 @@ fn handle_init(matches: &ArgMatches) {
             let config = ui::dialog_config::ask_for_config().unwrap();
             if let Err(e) = todoco::init(config, cur_dir) {
                 eprintln!("{}", e);
+            } else {
+                println!("wrote project file")
             }
         } else {
             eprintln!("Could not detect current directory.")
