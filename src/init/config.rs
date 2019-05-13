@@ -33,7 +33,7 @@ impl Config {
     pub fn get_from_dir(path: &Path) -> IOResult<Config> {
         let config = AppConfig::get();
         let mut path = path.to_path_buf();
-        path.push(config.project_file);
+        path.push(config.names.project_file);
         let file = File::open(path)?;
         let mut buf_reader = BufReader::new(file);
         let mut contents = String::new();
@@ -55,7 +55,7 @@ impl Config {
 
         let config = AppConfig::get();
         let mut path = path.to_path_buf();
-        path.push(config.project_file);
+        path.push(config.names.project_file);
         let mut file = File::create(path)?;
 
         file.write_all(config_text.as_bytes())?;

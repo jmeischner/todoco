@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize)]
 pub struct AppConfig {
-    pub project_file: String,
+    pub names: Names,
 }
 
 impl AppConfig {
@@ -12,4 +12,9 @@ impl AppConfig {
 
         return result;
     }
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct Names {
+    pub project_file: String,
 }

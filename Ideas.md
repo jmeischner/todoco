@@ -10,3 +10,4 @@
 - use .todocoignore
 - use multiple lists
 - use (console)[https://docs.rs/console/0.7.5/console/] crate
+- implement TaskPaper todo format / TaskPaper Export
