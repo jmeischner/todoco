@@ -110,11 +110,13 @@ fn extract_todos_from_content(lines: Lines<BufReader<File>>, file: SourceFile) -
 mod tests {
     use super::SourceFile;
     use super::Todo;
+    use crate::Config;
     use std::path::PathBuf;
 
     #[test]
     fn find_paths_from_dir() {
-        for p in super::get_path_walker_from_dir("env_tests/mod_scan/").skip(1) {
+        let path = "env_tests/mod_scan/";
+        for p in super::get_path_walker_from_dir(path, &Config::default(path)).skip(1) {
             if let Ok(path) = p {
                 let mut expected_path = PathBuf::new();
                 expected_path.push("env_tests");
@@ -128,7 +130,8 @@ mod tests {
 
     #[test]
     fn create_file_vec_from_path() {
-        let test_path = super::get_path_walker_from_dir("env_tests/mod_scan/");
+        let path = "env_tests/mod_scan/";
+        let test_path = super::get_path_walker_from_dir(path, &Config::default(path));
         let files = super::build_file_from_path(test_path);
         let expected = vec![SourceFile {
             name: String::from("file1.txt"),

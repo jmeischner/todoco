@@ -14,6 +14,7 @@ pub struct Config {
     pub project: Project,
 }
 
+// Todo: handle uncomplete config file
 impl Config {
     pub fn new(p_name: String, p_use_gitignore: bool) -> Config {
         Config {
@@ -72,7 +73,7 @@ mod tests {
     #[test]
     fn get_config_from_file() {
         let config = Config::get_from_dir(Path::new("env_tests/mod_init")).unwrap();
-        let expected = Config::new(String::from("test"));
-        assert_eq!(config.name, expected.name);
+        let expected = Config::new(String::from("test"), true);
+        assert_eq!(config.project.name, expected.project.name);
     }
 }

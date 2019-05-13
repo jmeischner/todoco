@@ -31,8 +31,8 @@ mod tests {
     #[test]
     fn get_default_config_with_path() {
         let result = super::get_default_config(Path::new("/here/it/is"));
-        let expected = Config::new(String::from("is"));
+        let expected = Config::new(String::from("is"), true);
 
-        assert_eq!(result.name, expected.name);
+        assert_eq!(result.project.name, expected.project.name);
     }
 }
