@@ -17,4 +17,5 @@ impl AppConfig {
 #[derive(Serialize, Deserialize)]
 pub struct Names {
     pub project_file: String,
+    pub ignore_file: String,
 }

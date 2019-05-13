@@ -10,6 +10,8 @@ use project::Project;
 use sourcefile::SourceFile;
 use todo::Todo;
 
+use crate::appconfig::AppConfig;
+
 pub mod list;
 pub mod project;
 pub mod sourcefile;
@@ -43,6 +45,7 @@ pub fn build_project(todos: Vec<Todo>, config: Config) -> Project {
 fn get_path_walker_from_dir(dir: &str, config: &Config) -> Walk {
     let mut walker = WalkBuilder::new(dir);
     walker.git_ignore(config.project.use_gitignore);
+    walker.add_custom_ignore_filename(AppConfig::get().names.ignore_file);
     walker.build()
 }
 
