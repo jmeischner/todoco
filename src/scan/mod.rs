@@ -17,6 +17,8 @@ pub mod project;
 pub mod sourcefile;
 pub mod todo;
 
+const TODO_REGEX: &str = r"(?i://\s*todo(:\s*|\s+))(?P<todo>.*$)";
+
 pub fn get_files(dir: &str, config: &Config) -> Vec<SourceFile> {
     // Todo: If no files were found, then give user output
     let paths = get_path_walker_from_dir(dir, config);
@@ -89,7 +91,7 @@ fn extract_todos_from_content(lines: Lines<BufReader<File>>, file: SourceFile) -
     let mut todos: Vec<Todo> = vec![];
     // Todo: Add configurable todo regex
     // Todo: Add regex for all kind of comment begins
-    let todo_regex = Regex::new(r"(?i://\s*todo(:\s*|\s+))(?P<todo>.*$)").unwrap();
+    let todo_regex = Regex::new(TODO_REGEX).unwrap();
 
     for (lnr, line) in lines.enumerate() {
         match line {
