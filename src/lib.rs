@@ -9,6 +9,7 @@ pub use init::config::Config;
 pub use scan::list::List;
 pub use scan::project::Project;
 pub use scan::sourcefile::SourceFile;
+pub use scan::todo::Tag;
 pub use scan::todo::Todo;
 
 // Todo: add error propagation
