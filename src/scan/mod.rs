@@ -1,5 +1,4 @@
 use ignore::{Walk, WalkBuilder};
-use regex::Regex;
 use std::fs::File;
 use std::io::Result as IOResult;
 use std::io::{BufRead, BufReader, Lines};
@@ -16,8 +15,7 @@ pub mod list;
 pub mod project;
 pub mod sourcefile;
 pub mod todo;
-
-const TODO_REGEX: &str = r"(?i://\s*todo(:\s*|\s+))(?P<todo>.*$)";
+mod todo_regex;
 
 pub fn get_files(dir: &str, config: &Config) -> Vec<SourceFile> {
     // Todo: If no files were found, then give user output
@@ -90,17 +88,22 @@ fn read_lines_of_file(file: &SourceFile) -> IOResult<Lines<BufReader<File>>> {
 fn extract_todos_from_content(lines: Lines<BufReader<File>>, file: SourceFile) -> Vec<Todo> {
     let mut todos: Vec<Todo> = vec![];
     // Todo: Add configurable todo regex
-    // Todo: Add regex for all kind of comment begins
-    let todo_regex = Regex::new(TODO_REGEX).unwrap();
+    // Todo: Add regex for all kind of comment begins @bla(bli) @blo(blu)
 
     for (lnr, line) in lines.enumerate() {
         match line {
             Ok(l) => {
-                for capture in todo_regex.captures_iter(&l) {
-                    let found_todo =
-                        Todo::new(String::from(&capture["todo"]), file.clone(), lnr + 1);
-                    todos.push(found_todo)
-                }
+                // if todo_regex::is_todo(&l) {
+                //     let matches = todo_regex.matches(&l);
+                // }
+                // for capture in todo_regex.is_match(&l) {
+                //     // let found_todo =
+                //     //     Todo::new(String::from(&capture["todo"]), file.clone(), lnr + 1);
+                //     let found_todo = Todo::new(String::from("b"), file.clone(), lnr + 1);
+                //     println!("{:?}", &capture);
+                //     println!("{:?}", todo_regex.patterns()[capture]);
+                //     todos.push(found_todo)
+                // }
             }
             // Todo: handle not valid utf-8 appropriatly
             Err(_e) => break,
