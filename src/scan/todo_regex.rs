@@ -13,7 +13,7 @@ impl TodoRegexer {
     const HAS_TAG: &'static str = r".*@[^\s.*]";
     const TODO_PATTERN: &'static str = r"(?i)[//|/\*|#]\s*todo[:\s*|\s+](?P<todo>.*)$";
     // Todo: Make Value Optional but match it if its there
-    const TAG_PATTERN: &'static str = r"(?i).*@(?P<tag>.*)\((?P<value>.*)\)$";
+    const TAG_PATTERN: &'static str = r"(?i).*@(?P<tag>[^\(\)\s]*)(\((?P<value>.*)\))?$";
 
     pub fn new() -> TodoRegexer {
         TodoRegexer {
@@ -54,7 +54,7 @@ impl TodoRegexer {
 
 // ~~~~~~~~~~~~~~~~~~~~ TESTS ~~~~~~~~~~~~~~~~~~~~ //
 #[cfg(test)]
-mod tests {
+mod tests_todo_regexer {
     use super::TodoRegexer;
 
     #[test]
@@ -101,7 +101,24 @@ mod tests {
         let tr = TodoRegexer::new();
         let todo = "blabla @bli()";
         let tag = tr.get_tag(todo).unwrap();
-        assert_eq!(tag.name, "bli()");
+        assert_eq!(tag.name, "bli");
         assert_eq!(tag.value, Some(String::from("")));
+    }
+
+    #[test]
+    fn get_complicated_tag() {
+        let tr = TodoRegexer::new();
+        let todo = "blabla @bli-blu-1(12-12-we)";
+        let tag = tr.get_tag(todo).unwrap();
+        assert_eq!(tag.name, "bli-blu-1");
+        assert_eq!(tag.value, Some(String::from("12-12-we")));
+    }
+
+    #[test]
+    fn do_not_register_tag_in_the_middle_of_test() {
+        let tr = TodoRegexer::new();
+        let todo = "blabla @bli-blu 1(12-12-we)";
+        let tag = tr.get_tag(todo);
+        assert_eq!(tag, None);
     }
 }

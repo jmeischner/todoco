@@ -43,3 +43,9 @@ impl Tag {
         }
     }
 }
+
+impl PartialEq for Tag {
+    fn eq(&self, other: &Tag) -> bool {
+        self.name == other.name && self.value == other.value
+    }
+}
