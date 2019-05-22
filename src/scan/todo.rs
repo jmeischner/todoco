@@ -9,23 +9,27 @@ pub struct Todo {
 }
 
 impl Todo {
-    pub fn new(text: String, file: SourceFile, line: usize) -> Todo {
+    pub fn new(text: String, file: SourceFile, line: usize, tags: Vec<Tag>) -> Todo {
         Todo {
             text: text,
             file: file,
             line: line,
-            tags: vec![],
+            tags: tags,
         }
     }
 
-    pub fn add_tag(&mut self, tag: Tag) {
-        self.tags.push(tag);
+    pub fn set_tags(&mut self, tags: Vec<Tag>) -> &mut Todo {
+        self.tags = tags;
+        self
     }
 }
 
 impl PartialEq for Todo {
     fn eq(&self, other: &Todo) -> bool {
-        self.text == other.text && self.file == other.file && self.line == other.line
+        self.text == other.text
+            && self.file == other.file
+            && self.line == other.line
+            && self.tags == other.tags
     }
 }
 

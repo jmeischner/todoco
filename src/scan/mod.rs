@@ -8,6 +8,7 @@ use list::List;
 use project::Project;
 use sourcefile::SourceFile;
 use todo::Todo;
+use todo_regex::TodoRegexer;
 
 use crate::appconfig::AppConfig;
 
@@ -88,27 +89,25 @@ fn read_lines_of_file(file: &SourceFile) -> IOResult<Lines<BufReader<File>>> {
 
 fn extract_todos_from_content(lines: Lines<BufReader<File>>, file: SourceFile) -> Vec<Todo> {
     let mut todos: Vec<Todo> = vec![];
-    // Todo: Add configurable todo regex
-    // Todo: Add regex for all kind of comment begins @bla(bli) @blo(blu)
+    let todo_regexer = TodoRegexer::new();
 
     for (lnr, line) in lines.enumerate() {
         match line {
             Ok(l) => {
-                // if todo_regex::is_todo(&l) {
-                //     let matches = todo_regex.matches(&l);
-                // }
-                // for capture in todo_regex.is_match(&l) {
-                //     // let found_todo =
-                //     //     Todo::new(String::from(&capture["todo"]), file.clone(), lnr + 1);
-                //     let found_todo = Todo::new(String::from("b"), file.clone(), lnr + 1);
-                //     println!("{:?}", &capture);
-                //     println!("{:?}", todo_regex.patterns()[capture]);
-                //     todos.push(found_todo)
-                // }
+                if todo_regexer.is_todo(&l) {
+                    if let Some(todo_text) = todo_regexer.extract_text(&l) {
+                        let line = lnr + 1;
+                        let file = file.clone();
+                        let (text, tags) = todo_regexer.extract_tags_from_text(todo_text);
+
+                        let todo = Todo::new(text, file, line, tags);
+                        todos.push(todo)
+                    }
+                }
             }
             // Todo: handle not valid utf-8 appropriatly
             Err(_e) => break,
-        };
+        }
     }
 
     todos
@@ -117,8 +116,9 @@ fn extract_todos_from_content(lines: Lines<BufReader<File>>, file: SourceFile) -
 // ~~~~~~~~~~~~~~~~~~~~ TESTS ~~~~~~~~~~~~~~~~~~~~ //
 #[cfg(test)]
 mod tests {
-    use super::SourceFile;
-    use super::Todo;
+    use super::sourcefile::SourceFile;
+    use super::todo::Tag;
+    use super::todo::Todo;
     use crate::Config;
     use std::path::PathBuf;
 
@@ -155,8 +155,15 @@ mod tests {
             String::from("file1.txt"),
             String::from("env_tests/mod_scan/file1.txt"),
         );
-        let expected_todo1 = Todo::new(String::from("Test"), test_file.clone(), 1);
-        let expected_todo2 = Todo::new(String::from("Test"), test_file.clone(), 2);
+
+        let expected_tag = Tag::new(String::from("bla"), Some(String::from("bli")));
+        let expected_todo1 = Todo::new(String::from("Test"), test_file.clone(), 1, vec![]);
+        let expected_todo2 = Todo::new(
+            String::from("Test"),
+            test_file.clone(),
+            2,
+            vec![expected_tag],
+        );
 
         let todo = super::extract_todos_from_files(vec![test_file]).unwrap();
 
