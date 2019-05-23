@@ -91,7 +91,7 @@ mod tests_taskpaper_parser {
                 )],
             )],
         );
-        let result_text = String::from_utf8(TaskPaperBuilder::new(project).build().unwrap());
+        let result_text = String::from_utf8(TaskPaperBuilder::new(&project).build().unwrap());
         let expected = "Test:
     List 1:
         - Todo 1 @bla @bli(blubb)
