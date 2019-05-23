@@ -8,5 +8,9 @@ subcommands:
         - DIR:
             help: Path to project which should be scanned.
             required: true
+        - export_taskpaper:
+            short: t
+            long: taskpaper
+            help: Export todos to taskpaper file.
   - init:
       about: Initialize new ToDoCo project

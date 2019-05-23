@@ -12,6 +12,7 @@ pub use scan::project::Project;
 pub use scan::sourcefile::SourceFile;
 pub use scan::todo::Tag;
 pub use scan::todo::Todo;
+pub use appconfig::AppConfig;
 
 // Todo: add error propagation
 pub fn scan(path: PathBuf) -> Result<Project, &'static str> {

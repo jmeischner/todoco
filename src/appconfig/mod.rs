@@ -25,4 +25,5 @@ pub struct Names {
 pub struct ProjectDirectory {
     pub name: String,
     pub project_json: String,
+    pub export_taskpaper_extension: String,
 }

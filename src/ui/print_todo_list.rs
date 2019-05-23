@@ -2,7 +2,7 @@ use ansi_term::Color::{Blue, Cyan, Green, Yellow};
 
 use todoco::{List, Project, Todo};
 
-pub fn print_project(project: Project) {
+pub fn print_project(project: &Project) {
     hbar();
     let project_title = format!("{}", Blue.bold().underline().paint(&project.name));
     println!("{:^80}", project_title);
@@ -13,7 +13,7 @@ pub fn print_project(project: Project) {
 
     hbar();
 
-    print_summary(project);
+    print_summary(&project);
 
     hbar();
 }
@@ -50,7 +50,7 @@ fn print_todo(todo: &Todo) {
     }
 }
 
-fn print_summary(project: Project) {
+fn print_summary(project: &Project) {
     let list_count = project.lists.len();
     let todo_count = project.lists.iter().fold(0, |acc, l| acc + l.todos.len());
     let summary_text = format!("Found {} ToDos in {} List(s)", todo_count, list_count);

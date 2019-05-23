@@ -1,0 +1,38 @@
+todoco:
+    All:
+        - Make config fields optional for better serialization
+        in ./src/init/config.rs:12
+        - handle uncomplete config file
+        in ./src/init/config.rs:18
+        - There is a problem with extracting current path
+        in ./src/init/mod.rs:16
+        - Use dialoguer Theme
+        in ./src/ui/dialog_config.rs:6
+        - Use appconfig for prompt
+        in ./src/ui/dialog_config.rs:35
+        - Use appconfig for prompt
+        in ./src/ui/dialog_config.rs:42
+        - break longer texts
+        in ./src/ui/print_todo_list.rs:35
+        - make configurable
+        in ./src/ui/print_todo_list.rs:40
+        - add error propagation
+        in ./src/lib.rs:17
+        - my test line";
+        in ./src/scan/todo_regex.rs:102
+        - If no files were found, then give user output
+        in ./src/scan/mod.rs:22
+        - Parallel Extraction
+        in ./src/scan/mod.rs:27
+        - What if one if the 'Some's fails
+        in ./src/scan/mod.rs:61
+        - handle Result appropriatly
+        in ./src/scan/mod.rs:69
+        - Handle GlobError appropriately
+        in ./src/scan/mod.rs:79
+        - handle not valid utf-8 appropriatly
+        in ./src/scan/mod.rs:110
+        - Save next few lines for preview
+        in ./src/scan/todo.rs:9
+        - Build enum of export options @next-week @prio(1)
+        in ./src/main.rs:30

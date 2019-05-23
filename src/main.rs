@@ -6,6 +6,8 @@ use std::env;
 use std::path::PathBuf;
 
 use todoco;
+use todoco::export::taskpaper::TaskPaperBuilder;
+use todoco::AppConfig;
 
 mod ui;
 
@@ -23,8 +25,23 @@ fn handle_scan(matches: &ArgMatches) {
     if let Some(matches) = matches.subcommand_matches("scan") {
         let dir = matches.value_of("DIR").unwrap();
         let path = PathBuf::from(dir);
-        let project = todoco::scan(path).unwrap();
-        ui::print_todo_list::print_project(project);
+        let project = todoco::scan(path.clone()).unwrap();
+
+        // Todo: Build enum of export options @prio(1) @next-week
+        if matches.is_present("export_taskpaper") {
+            let builder = TaskPaperBuilder::new(&project);
+            if let Err(e) = builder.write(path.clone()) {
+                eprintln!("{}", e);
+            } else {
+                let extension = AppConfig::get()
+                    .names
+                    .project_directory
+                    .export_taskpaper_extension;
+                println!("Finished! You got your {}{}!", project.name, extension);
+            };
+        } else {
+            ui::print_todo_list::print_project(&project);
+        }
     }
 }
 

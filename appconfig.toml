@@ -5,3 +5,4 @@ ignore_file       = ".todocoignore"
     [names.project_directory]
     name = ".todoco"
     project_json = "project.json"
+    export_taskpaper_extension = ".taskpaper"
