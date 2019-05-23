@@ -1,6 +1,7 @@
 use crate::SourceFile;
+use serde::{Deserialize, Serialize};
 
-#[derive(Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct Todo {
     pub text: String,
     pub file: SourceFile,
@@ -33,7 +34,7 @@ impl PartialEq for Todo {
     }
 }
 
-#[derive(Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct Tag {
     pub name: String,
     pub value: Option<String>,

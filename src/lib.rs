@@ -43,5 +43,6 @@ pub fn scan(path: PathBuf) -> Result<Project, &'static str> {
 
 pub fn init(config: Config, path: PathBuf) -> IOResult<()> {
     config.write(&path)?;
+    export::init_project_dir(path)?;
     Ok(())
 }

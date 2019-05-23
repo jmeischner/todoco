@@ -1,6 +1,7 @@
 use crate::List;
+use serde::{Deserialize, Serialize};
 
-#[derive(Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct Project {
     pub name: String,
     pub lists: Vec<List>,

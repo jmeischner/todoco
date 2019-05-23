@@ -1,4 +1,7 @@
 [names]
 project_file      = "todoco.toml"
 ignore_file       = ".todocoignore"
-project_directory = ".todoco"
+
+    [names.project_directory]
+    name = ".todoco"
+    project_json = "project.json"

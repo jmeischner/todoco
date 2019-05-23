@@ -1,6 +1,7 @@
 use crate::Todo;
+use serde::{Deserialize, Serialize};
 
-#[derive(Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct List {
     pub name: String,
     pub todos: Vec<Todo>,

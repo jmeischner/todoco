@@ -18,5 +18,11 @@ impl AppConfig {
 pub struct Names {
     pub project_file: String,
     pub ignore_file: String,
-    pub project_directory: String,
+    pub project_directory: ProjectDirectory,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct ProjectDirectory {
+    pub name: String,
+    pub project_json: String,
 }
