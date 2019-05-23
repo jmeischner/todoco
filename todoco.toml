@@ -1,3 +1,5 @@
 [project]
 name = 'todoco'
 use_gitignore = true
+use_ignore = false
+search_hidden = false

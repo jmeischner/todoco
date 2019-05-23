@@ -1,0 +1,37 @@
+use crate::appconfig::AppConfig;
+use crate::Project;
+use std::fs;
+use std::fs::File;
+use std::io::Result as IOResult;
+use std::io::Write;
+use std::path::PathBuf;
+
+pub fn project_to_path(project: &Project, path: PathBuf) -> IOResult<()> {
+    let project_path = get_project_dir_path(path);
+    create_project_dir(&project_path)?;
+    write_default_todocoignore(project_path.clone())?;
+    Ok(())
+}
+
+fn get_project_dir_path(mut path: PathBuf) -> PathBuf {
+    let appconfig = AppConfig::get();
+    path.push(appconfig.names.project_directory);
+    path
+}
+
+fn create_project_dir(path: &PathBuf) -> IOResult<()> {
+    fs::create_dir_all(path)?;
+    Ok(())
+}
+
+fn write_default_todocoignore(mut path: PathBuf) -> IOResult<()> {
+    let ignore_filename = AppConfig::get().names.ignore_file;
+    path.push(ignore_filename);
+
+    if !path.exists() {
+        let mut ignore_file = File::create(path)?;
+        ignore_file.write_all(b"**")?;
+    };
+
+    Ok(())
+}

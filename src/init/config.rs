@@ -9,7 +9,7 @@ use super::project::Project;
 
 use crate::appconfig::AppConfig;
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct Config {
     pub project: Project,
 }
@@ -17,12 +17,8 @@ pub struct Config {
 // Todo: handle uncomplete config file
 impl Config {
     pub fn new(p_name: String, p_use_gitignore: bool) -> Config {
-        Config {
-            project: Project {
-                name: p_name,
-                use_gitignore: p_use_gitignore,
-            },
-        }
+        let project = Project::new(p_name, p_use_gitignore);
+        Config { project: project }
     }
 
     pub fn default(dir: &str) -> Config {
