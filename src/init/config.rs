@@ -9,6 +9,7 @@ use super::project::Project;
 
 use crate::appconfig::AppConfig;
 
+// Todo: Make config fields optional for better serialization
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Config {
     pub project: Project,
