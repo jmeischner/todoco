@@ -40,6 +40,14 @@ fn print_todo(todo: &Todo) {
     // Todo: make configurable
     let path_text = format!("at {}:{}", todo.file.path, todo.line);
     println!("{}{}", tab(3), Yellow.paint(path_text));
+
+    for tag in &todo.tags {
+        if let Some(value) = &tag.value {
+            println!("{}Tag: {}, Value: {}", tab(3), &tag.name, value);
+        } else {
+            println!("{}Tag: {}", tab(3), &tag.name);
+        }
+    }
 }
 
 fn print_summary(project: Project) {
