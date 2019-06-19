@@ -1,4 +1,4 @@
-use config::Config;
+use types::Config;
 use std::path::Path;
 
 pub fn get_default_config(path: &Path) -> Config {

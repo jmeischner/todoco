@@ -9,7 +9,6 @@ ui = { path = "../ui" }
 export = { path = "../export" }
 appconfig = { path = "../appconfig" }
 types = { path = "../types" }
-config = { path = "../config" }
 clap = {version = "^2.33.0", features= ["yaml"]}
 ignore = "^0.4.7"
 toml = "^0.4.2"

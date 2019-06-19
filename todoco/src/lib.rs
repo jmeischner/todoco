@@ -1,7 +1,6 @@
 use std::io::Result as IOResult;
 use std::path::PathBuf;
-use config::Config;
-use types::Project;
+use types::{Project, Config};
 
 pub mod init;
 pub mod scan;

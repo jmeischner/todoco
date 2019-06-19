@@ -5,7 +5,7 @@ use clap::{App, ArgMatches};
 use std::env;
 use std::path::PathBuf;
 
-use export::taskpaper::TaskPaperBuilder;
+use export::format::taskpaper::TaskPaperBuilder;
 use appconfig::AppConfig;
 use ui;
 

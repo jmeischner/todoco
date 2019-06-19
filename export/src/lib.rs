@@ -7,7 +7,9 @@ use std::io::Write;
 use std::path::PathBuf;
 use types::Project;
 
-pub mod taskpaper;
+pub mod format;
+
+mod transition_comparison;
 
 pub fn project_to_path(project: &Project, path: PathBuf) -> IOResult<()> {
     init_project_dir(path.clone())?;

@@ -4,9 +4,8 @@ use std::io::Result as IOResult;
 use std::io::{BufRead, BufReader, Lines};
 
 use appconfig::AppConfig;
-use config::Config;
 use todo_regex::TodoRegexer;
-use types::{List, Project, SourceFile, Todo};
+use types::{List, Project, SourceFile, Todo, Config};
 
 mod todo_regex;
 
@@ -50,7 +49,7 @@ fn build_file_from_path(paths: Walk) -> Vec<SourceFile> {
             if let Ok(entry) = direntry {
                 let path = entry.path();
                 if path.is_file() {
-                    // Todo: What if one if the 'Some's fails
+                    // Todo: What if one of the 'Some's fails
                     if let (Some(name), Some(full_path)) = (path.file_name(), path.to_str()) {
                         if let Some(filename) = name.to_str() {
                             Some(SourceFile::new(
