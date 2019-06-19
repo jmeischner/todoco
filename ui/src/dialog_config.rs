@@ -1,7 +1,7 @@
+use config::Config;
 use dialoguer::{Confirmation, Input};
 use std::env;
 use std::io::Result as IOResult;
-use todoco::Config;
 
 // Todo: Use dialoguer Theme
 pub fn ask_for_config() -> IOResult<Config> {

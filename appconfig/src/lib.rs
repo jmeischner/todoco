@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+use toml;
 
 #[derive(Serialize, Deserialize)]
 pub struct AppConfig {
@@ -7,7 +8,7 @@ pub struct AppConfig {
 
 impl AppConfig {
     pub fn get() -> AppConfig {
-        let file = include_str!("../../appconfig.toml");
+        let file = include_str!("../appconfig.toml");
         let result: AppConfig = toml::from_str(file).unwrap();
 
         return result;

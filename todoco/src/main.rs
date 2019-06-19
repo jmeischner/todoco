@@ -5,11 +5,11 @@ use clap::{App, ArgMatches};
 use std::env;
 use std::path::PathBuf;
 
-use todoco;
-use todoco::export::taskpaper::TaskPaperBuilder;
-use todoco::AppConfig;
+use export::taskpaper::TaskPaperBuilder;
+use appconfig::AppConfig;
+use ui;
 
-mod ui;
+use todoco;
 
 fn main() {
     let yaml = load_yaml!("../cli.yml");

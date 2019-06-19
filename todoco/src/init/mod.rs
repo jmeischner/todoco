@@ -1,9 +1,6 @@
 use config::Config;
 use std::path::Path;
 
-pub mod config;
-pub mod project;
-
 pub fn get_default_config(path: &Path) -> Config {
     let cur_dir = match extract_current_directory_name(path) {
         Some(dir) => dir,

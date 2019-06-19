@@ -1,18 +1,10 @@
 use std::io::Result as IOResult;
 use std::path::PathBuf;
+use config::Config;
+use types::Project;
 
-pub mod appconfig;
-pub mod export;
 pub mod init;
 pub mod scan;
-
-pub use init::config::Config;
-pub use scan::list::List;
-pub use scan::project::Project;
-pub use scan::sourcefile::SourceFile;
-pub use scan::todo::Tag;
-pub use scan::todo::Todo;
-pub use appconfig::AppConfig;
 
 // Todo: add error propagation
 pub fn scan(path: PathBuf) -> Result<Project, &'static str> {

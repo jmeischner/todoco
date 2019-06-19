@@ -3,19 +3,11 @@ use std::fs::File;
 use std::io::Result as IOResult;
 use std::io::{BufRead, BufReader, Lines};
 
-use crate::Config;
-use list::List;
-use project::Project;
-use sourcefile::SourceFile;
-use todo::Todo;
+use appconfig::AppConfig;
+use config::Config;
 use todo_regex::TodoRegexer;
+use types::{List, Project, SourceFile, Todo};
 
-use crate::appconfig::AppConfig;
-
-pub mod list;
-pub mod project;
-pub mod sourcefile;
-pub mod todo;
 mod todo_regex;
 
 pub fn get_files(dir: &str, config: &Config) -> Vec<SourceFile> {

@@ -1,10 +1,11 @@
-use crate::{AppConfig, Project};
+use appconfig::AppConfig;
 use serde_json;
 use std::fs;
 use std::fs::File;
 use std::io::Result as IOResult;
 use std::io::Write;
 use std::path::PathBuf;
+use types::Project;
 
 pub mod taskpaper;
 

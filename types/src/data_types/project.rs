@@ -1,4 +1,4 @@
-use crate::List;
+use super::list::List;
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug)]

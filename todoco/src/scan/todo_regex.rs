@@ -1,4 +1,4 @@
-use crate::Tag;
+use types::Tag;
 use regex::Regex;
 
 pub struct TodoRegexer {

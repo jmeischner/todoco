@@ -1,0 +1,11 @@
+[package]
+name = "export"
+version = "0.1.0"
+authors = ["janmeischner"]
+edition = "2018"
+
+[dependencies]
+appconfig = { path = "../appconfig" }
+types = { path = "../types" }
+config = { path = "../config" }
+serde_json = "^1.0.0"

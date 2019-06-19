@@ -1,0 +1,16 @@
+[package]
+name = "todoco"
+version = "0.3.1"
+authors = ["Jan Meischner <jan.meischner@googlemail.com>"]
+edition = "2018"
+
+[dependencies]
+ui = { path = "../ui" }
+export = { path = "../export" }
+appconfig = { path = "../appconfig" }
+types = { path = "../types" }
+config = { path = "../config" }
+clap = {version = "^2.33.0", features= ["yaml"]}
+ignore = "^0.4.7"
+toml = "^0.4.2"
+regex = "^1.1.6"

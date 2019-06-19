@@ -1,8 +1,9 @@
-use crate::{AppConfig, List, Project, Todo};
+use appconfig::AppConfig;
 use std::fs::File;
 use std::io::Result as IOResult;
 use std::io::Write;
 use std::path::PathBuf;
+use types::{List, Project, Todo};
 
 pub struct TaskPaperBuilder<'a> {
     project: &'a Project,
@@ -72,7 +73,7 @@ fn tab(times: usize) -> String {
 #[cfg(test)]
 mod tests_taskpaper_parser {
     use super::TaskPaperBuilder;
-    use crate::{List, Project, SourceFile, Tag, Todo};
+    use types::{List, Project, SourceFile, Tag, Todo};
 
     #[test]
     fn create_taskpaper_string_from_project() {

@@ -1,0 +1,10 @@
+[package]
+name = "config"
+version = "0.1.0"
+authors = ["janmeischner"]
+edition = "2018"
+
+[dependencies]
+appconfig = { path = "../appconfig" }
+serde = {version = "^1.0.90", features = ["derive"] }
+toml = "^0.4.2"

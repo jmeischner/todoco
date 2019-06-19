@@ -4,26 +4,24 @@ use std::io::{BufReader, Read, Write};
 use std::io::{Error as IOError, ErrorKind, Result as IOResult};
 use std::path::Path;
 use toml;
-
-use super::project::Project;
-
-use crate::appconfig::AppConfig;
+use super::projectfile::ProjectFile;
+use appconfig::AppConfig;
 
 // Todo: Make config fields optional for better serialization
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Config {
-    pub project: Project,
+    pub project: ProjectFile,
 }
 
 // Todo: handle uncomplete config file
 impl Config {
     pub fn new(p_name: String, p_use_gitignore: bool) -> Config {
-        let project = Project::new(p_name, p_use_gitignore);
+        let project = ProjectFile::new(p_name, p_use_gitignore);
         Config { project: project }
     }
 
     pub fn default(dir: &str) -> Config {
-        let project = Project::new(String::from(dir), true);
+        let project = ProjectFile::new(String::from(dir), true);
         Config { project: project }
     }
 

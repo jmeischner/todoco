@@ -1,6 +1,6 @@
 use ansi_term::Color::{Blue, Cyan, Green, Yellow};
 
-use todoco::{List, Project, Todo};
+use types::{List, Project, Todo};
 
 pub fn print_project(project: &Project) {
     hbar();
