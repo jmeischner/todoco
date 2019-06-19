@@ -1,11 +1,11 @@
+use super::projectfile::ProjectFile;
+use appconfig::AppConfig;
 use serde::{Deserialize, Serialize};
 use std::fs::File;
 use std::io::{BufReader, Read, Write};
 use std::io::{Error as IOError, ErrorKind, Result as IOResult};
 use std::path::Path;
 use toml;
-use super::projectfile::ProjectFile;
-use appconfig::AppConfig;
 
 // Todo: Make config fields optional for better serialization
 #[derive(Serialize, Deserialize, Debug)]
@@ -67,7 +67,7 @@ mod tests {
 
     #[test]
     fn get_config_from_file() {
-        let config = Config::get_from_dir(Path::new("env_tests/mod_init")).unwrap();
+        let config = Config::get_from_dir(Path::new("../env_tests/mod_init")).unwrap();
         let expected = Config::new(String::from("test"), true);
         assert_eq!(config.project.name, expected.project.name);
     }

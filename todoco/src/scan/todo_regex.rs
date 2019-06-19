@@ -89,7 +89,7 @@ impl TodoRegexer {
 #[cfg(test)]
 mod tests_todo_regexer {
     use super::TodoRegexer;
-    use crate::Tag;
+    use types::Tag;
 
     fn build_todo_and_tag(text: &str) -> (String, Option<Tag>) {
         let tr = TodoRegexer::new();

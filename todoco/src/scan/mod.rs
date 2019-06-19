@@ -110,10 +110,8 @@ fn extract_todos_from_content(lines: Lines<BufReader<File>>, file: SourceFile) -
 // ~~~~~~~~~~~~~~~~~~~~ TESTS ~~~~~~~~~~~~~~~~~~~~ //
 #[cfg(test)]
 mod tests {
-    use super::sourcefile::SourceFile;
-    use super::todo::Tag;
-    use super::todo::Todo;
-    use crate::Config;
+    use types::{Todo, Tag, SourceFile};
+    use config::Config;
     use std::path::PathBuf;
 
     #[test]
@@ -133,12 +131,12 @@ mod tests {
 
     #[test]
     fn create_file_vec_from_path() {
-        let path = "env_tests/mod_scan/";
+        let path = "../env_tests/mod_scan/";
         let test_path = super::get_path_walker_from_dir(path, &Config::default(path));
         let files = super::build_file_from_path(test_path);
         let expected = vec![SourceFile {
             name: String::from("file1.txt"),
-            path: String::from("env_tests/mod_scan/file1.txt"),
+            path: String::from("../env_tests/mod_scan/file1.txt"),
         }];
         assert_eq!(files, expected)
     }
@@ -147,7 +145,7 @@ mod tests {
     fn extract_todo_from_test_file() {
         let test_file = SourceFile::new(
             String::from("file1.txt"),
-            String::from("env_tests/mod_scan/file1.txt"),
+            String::from("../env_tests/mod_scan/file1.txt"),
         );
 
         let expected_tag = Tag::new(String::from("bla"), Some(String::from("bli")));
