@@ -3,7 +3,6 @@ use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
 use appconfig::AppConfig;
 use serde_json;
-use std::io::{Error as IOError, ErrorKind, Result as IOResult};
 use std::fs::File;
 use std::io::{BufReader, Read};
 use std::path::Path;
@@ -22,24 +21,24 @@ impl Project {
         }
     }
 
-    pub fn from_dir(path: &Path) -> IOResult<Project> {
+    pub fn from_dir(path: &Path) -> Option<Project> {
         let config = AppConfig::get();
         let mut path = config.get_project_dir_path(path.to_path_buf());
         path.push(config.names.project_directory.project_json);
-        println!("{:?}", &path);
-        let file = File::open(path)?;
-        let mut buf_reader = BufReader::new(file);
-        let mut contents = String::new();
-        buf_reader.read_to_string(&mut contents)?;
-        let result = serde_json::from_str(&contents);
         
-        match result {
-            Ok(project) => Ok(project),
-            Err(_) => Err(IOError::new(
-                ErrorKind::InvalidData,
-                "Saved project file contains invalid data.",
-            )),
+        if let Ok(file) = File::open(path) {
+            let mut buf_reader = BufReader::new(file);
+            let mut contents = String::new();
+            
+            if let Ok(_) = buf_reader.read_to_string(&mut contents) {
+                if let Ok(result) = serde_json::from_str(&contents) {
+                    return Some(result);
+                }
+            }
+            ;
         }
+        
+        None
     }
 
     pub fn group_by_file(&self) -> Option<HashMap<String, Vec<&Todo>>> {
