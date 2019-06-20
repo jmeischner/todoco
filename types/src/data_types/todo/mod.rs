@@ -1,9 +1,13 @@
 use super::sourcefile::SourceFile;
 use super::tag::Tag;
 use serde::{Deserialize, Serialize};
+use uuid::Uuid;
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+const EQUALITY_THRESHOLD: f32 = 0.8;
+
+#[derive(Serialize, Deserialize, Debug, Clone, Eq)]
 pub struct Todo {
+    id: Uuid,
     pub text: String,
     pub file: SourceFile,
     pub line: usize,
@@ -13,6 +17,7 @@ pub struct Todo {
 impl Todo {
     pub fn new(text: String, file: SourceFile, line: usize, tags: Vec<Tag>) -> Todo {
         Todo {
+            id: Uuid::new_v4(),
             text: text,
             file: file,
             line: line,
@@ -24,13 +29,17 @@ impl Todo {
         self.tags = tags;
         self
     }
-}
 
-impl PartialEq for Todo {
-    fn eq(&self, other: &Todo) -> bool {
+    pub fn is_similar_to(&self, other: &Todo) -> bool {
         self.text == other.text
             && self.file == other.file
             && self.line == other.line
             && self.tags == other.tags
+    }
+}
+
+impl PartialEq for Todo {
+    fn eq(&self, other: &Todo) -> bool {
+        self.id == other.id
     }
 }

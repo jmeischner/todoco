@@ -156,6 +156,8 @@ mod tests {
 
         let todo = super::extract_todos_from_files(vec![test_file]).unwrap();
 
-        assert_eq!(todo, vec![expected_todo1, expected_todo2])
+        assert_eq!(todo.len(), 2);
+        assert!(todo[0].is_similar_to(&expected_todo1));
+        assert!(todo[1].is_similar_to(&expected_todo2));
     }
 }
