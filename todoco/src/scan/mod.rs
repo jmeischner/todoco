@@ -110,7 +110,7 @@ fn extract_todos_from_content(lines: Lines<BufReader<File>>, file: SourceFile) -
 #[cfg(test)]
 mod tests {
     use types::{Todo, Tag, SourceFile};
-    use config::Config;
+    use types::Config;
     use std::path::PathBuf;
 
     #[test]

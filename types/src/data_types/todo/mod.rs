@@ -2,7 +2,7 @@ use super::sourcefile::SourceFile;
 use super::tag::Tag;
 use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Todo {
     pub text: String,
     pub file: SourceFile,

@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Hash, Eq, Serialize, Deserialize, Debug, Clone)]
 pub struct SourceFile {
     pub name: String,
     pub path: String,

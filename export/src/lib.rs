@@ -9,8 +9,6 @@ use types::Project;
 
 pub mod format;
 
-mod transition_comparison;
-
 pub fn project_to_path(project: &Project, path: PathBuf) -> IOResult<()> {
     init_project_dir(path.clone())?;
     write_project_to_directory(project, path.clone())?;
