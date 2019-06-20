@@ -1,14 +1,14 @@
-use ansi_term::Color::{Blue, Cyan, Green, Yellow};
+use ansi_term::Color::{Blue, Green, Yellow};
 
-use types::{List, Project, Todo};
+use types::{Project, Todo};
 
 pub fn print_project(project: &Project) {
     hbar();
     let project_title = format!("{}", Blue.bold().underline().paint(&project.name));
     println!("{:^80}", project_title);
 
-    for list in &project.lists {
-        print_list(&list);
+    for todo in &project.todos {
+        print_todo(&todo);
     }
 
     hbar();
@@ -16,19 +16,6 @@ pub fn print_project(project: &Project) {
     print_summary(&project);
 
     hbar();
-}
-
-fn print_list(list: &List) {
-    println!(
-        "{}{} {}",
-        tab(1),
-        Cyan.bold().paint("◍"),
-        Cyan.underline().paint(&list.name)
-    );
-
-    for todo in &list.todos {
-        print_todo(&todo);
-    }
 }
 
 fn print_todo(todo: &Todo) {
@@ -51,9 +38,8 @@ fn print_todo(todo: &Todo) {
 }
 
 fn print_summary(project: &Project) {
-    let list_count = project.lists.len();
-    let todo_count = project.lists.iter().fold(0, |acc, l| acc + l.todos.len());
-    let summary_text = format!("Found {} ToDos in {} List(s)", todo_count, list_count);
+    let todo_count = project.todos.len();
+    let summary_text = format!("Found {} ToDos", todo_count);
     let summary = format!("{:>80}", summary_text);
 
     println!("{}", Green.paint(summary));

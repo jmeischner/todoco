@@ -3,7 +3,7 @@ use std::fs::File;
 use std::io::Result as IOResult;
 use std::io::Write;
 use std::path::PathBuf;
-use types::{List, Project, Todo};
+use types::{Project, Todo};
 
 pub struct TaskPaperBuilder<'a> {
     project: &'a Project,
@@ -19,8 +19,8 @@ impl<'a> TaskPaperBuilder<'a> {
 
         writeln!(output, "{}:", self.project.name)?;
 
-        for list in &self.project.lists {
-            write_list(&list, &mut output)?;
+        for todo in &self.project.todos {
+            write_todo(&todo, &mut output)?;
         }
 
         Ok(output)
@@ -38,16 +38,6 @@ impl<'a> TaskPaperBuilder<'a> {
         file.write(&text)?;
         Ok(())
     }
-}
-
-fn write_list(list: &List, mut writer: impl Write) -> IOResult<()> {
-    writeln!(writer, "{}{}:", tab(1), list.name)?;
-
-    for todo in &list.todos {
-        write_todo(&todo, &mut writer)?;
-    }
-
-    Ok(())
 }
 
 fn write_todo(todo: &Todo, mut writer: impl Write) -> IOResult<()> {
@@ -73,28 +63,24 @@ fn tab(times: usize) -> String {
 #[cfg(test)]
 mod tests_taskpaper_parser {
     use super::TaskPaperBuilder;
-    use types::{List, Project, SourceFile, Tag, Todo};
+    use types::{Project, SourceFile, Tag, Todo};
 
     #[test]
     fn create_taskpaper_string_from_project() {
         let project = Project::new(
             String::from("Test"),
-            vec![List::new(
-                String::from("List 1"),
-                vec![Todo::new(
-                    String::from("Todo 1"),
-                    SourceFile::new(String::from("p.txt"), String::from("path/p.txt")),
-                    34,
-                    vec![
-                        Tag::new(String::from("bla"), None),
-                        Tag::new(String::from("bli"), Some(String::from("blubb"))),
-                    ],
-                )],
+            vec![Todo::new(
+                String::from("Todo 1"),
+                SourceFile::new(String::from("p.txt"), String::from("path/p.txt")),
+                34,
+                vec![
+                    Tag::new(String::from("bla"), None),
+                    Tag::new(String::from("bli"), Some(String::from("blubb"))),
+                ],
             )],
         );
         let result_text = String::from_utf8(TaskPaperBuilder::new(&project).build().unwrap());
         let expected = "Test:
-    List 1:
         - Todo 1 @bla @bli(blubb)
         in path/p.txt:34
 ";
