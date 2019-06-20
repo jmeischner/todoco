@@ -3,7 +3,7 @@ use super::tag::Tag;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-const EQUALITY_THRESHOLD: f32 = 0.8;
+// const EQUALITY_THRESHOLD: f32 = 0.8;
 
 #[derive(Serialize, Deserialize, Debug, Clone, Eq)]
 pub struct Todo {

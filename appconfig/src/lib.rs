@@ -1,5 +1,6 @@
 use serde::{Deserialize, Serialize};
 use toml;
+use std::path::PathBuf;
 
 #[derive(Serialize, Deserialize)]
 pub struct AppConfig {
@@ -13,6 +14,11 @@ impl AppConfig {
 
         return result;
     }
+
+    pub fn get_project_dir_path(&self, mut path: PathBuf) -> PathBuf {
+    path.push(&self.names.project_directory.name);
+    path
+}
 }
 
 #[derive(Serialize, Deserialize)]

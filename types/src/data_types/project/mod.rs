@@ -1,6 +1,12 @@
 use crate::Todo;
 use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
+use appconfig::AppConfig;
+use serde_json;
+use std::io::{Error as IOError, ErrorKind, Result as IOResult};
+use std::fs::File;
+use std::io::{BufReader, Read};
+use std::path::Path;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Project {
@@ -13,6 +19,26 @@ impl Project {
         Project {
             name: name,
             todos: todos,
+        }
+    }
+
+    pub fn from_dir(path: &Path) -> IOResult<Project> {
+        let config = AppConfig::get();
+        let mut path = config.get_project_dir_path(path.to_path_buf());
+        path.push(config.names.project_directory.project_json);
+        println!("{:?}", &path);
+        let file = File::open(path)?;
+        let mut buf_reader = BufReader::new(file);
+        let mut contents = String::new();
+        buf_reader.read_to_string(&mut contents)?;
+        let result = serde_json::from_str(&contents);
+        
+        match result {
+            Ok(project) => Ok(project),
+            Err(_) => Err(IOError::new(
+                ErrorKind::InvalidData,
+                "Saved project file contains invalid data.",
+            )),
         }
     }
 
@@ -34,12 +60,20 @@ impl Project {
     }
 }
 
+impl PartialEq for Project {
+    fn eq(&self, other: &Project) -> bool {
+        self.name == other.name
+        && self.todos == other.todos
+    }
+}
+
 // ~~~~~~~~~~~~~~~~~~~~ TESTS ~~~~~~~~~~~~~~~~~~~~ //
 #[cfg(test)]
 mod tests_mod {
 
     use crate::{Project, SourceFile, Todo};
     use std::collections::HashMap;
+    use std::path::Path;
 
     #[test]
     fn get_todos_grouped_by_files() {
@@ -69,5 +103,25 @@ mod tests_mod {
         let project = Project::new("My List".to_string(), vec![]);
         let grouped = project.group_by_file();
         assert_eq!(grouped, None);
+    }
+
+    #[test]
+    fn could_read_project_file() {
+        let project = Project::from_dir(Path::new("fixtures/project")).unwrap();
+        let expected_project = Project::new(
+            "todoco".to_string(), 
+            vec![Todo::new(
+                "Use dialoguer Theme".to_string(),
+                SourceFile::new(
+                    "dialog_config.rs".to_string(),
+                    "./ui/src/dialog_config.rs".to_string()
+                ), 
+                6, 
+                vec![]
+            )]
+        );
+
+        assert_eq!(expected_project.name, project.name);
+        assert_eq!(expected_project.todos.len(), project.todos.len());
     }
 }

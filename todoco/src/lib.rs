@@ -8,7 +8,7 @@ pub mod scan;
 // Todo: add error propagation
 pub fn scan(path: PathBuf) -> Result<Project, &'static str> {
     if let Some(root_dir) = path.to_str() {
-        let (is_project, config) = match Config::get_from_dir(&path) {
+        let (is_project, config) = match Config::from_dir(&path) {
             Ok(c) => (true, c),
             Err(_) => (false, init::get_default_config(&path)),
         };

@@ -1,0 +1,15 @@
+{
+  "name": "todoco",
+  "todos": [
+    {
+      "id": "71e30879-fedc-4b52-a69d-ecc19b6e0565",
+      "text": "Use dialoguer Theme",
+      "file": {
+        "name": "dialog_config.rs",
+        "path": "./ui/src/dialog_config.rs"
+      },
+      "line": 6,
+      "tags": []
+    }
+  ]
+}

@@ -16,16 +16,11 @@ pub fn project_to_path(project: &Project, path: PathBuf) -> IOResult<()> {
 }
 
 pub fn init_project_dir(path: PathBuf) -> IOResult<()> {
-    let project_path = get_project_dir_path(path);
+    let appconf = AppConfig::get();
+    let project_path = appconf.get_project_dir_path(path);
     create_project_dir(&project_path)?;
     write_default_todocoignore(project_path.clone())?;
     Ok(())
-}
-
-fn get_project_dir_path(mut path: PathBuf) -> PathBuf {
-    let appconfig = AppConfig::get();
-    path.push(appconfig.names.project_directory.name);
-    path
 }
 
 fn create_project_dir(path: &PathBuf) -> IOResult<()> {
@@ -46,8 +41,9 @@ fn write_default_todocoignore(mut path: PathBuf) -> IOResult<()> {
 }
 
 fn write_project_to_directory(project: &Project, path: PathBuf) -> IOResult<()> {
-    let project_filename = AppConfig::get().names.project_directory.project_json;
-    let mut path = get_project_dir_path(path);
+    let appconf = AppConfig::get();
+    let project_filename = &appconf.names.project_directory.project_json;
+    let mut path = appconf.get_project_dir_path(path);
     path.push(project_filename);
 
     let project_json = serde_json::to_string(&project)?;

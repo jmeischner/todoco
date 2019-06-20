@@ -25,7 +25,7 @@ impl Config {
         Config { project: project }
     }
 
-    pub fn get_from_dir(path: &Path) -> IOResult<Config> {
+    pub fn from_dir(path: &Path) -> IOResult<Config> {
         let config = AppConfig::get();
         let mut path = path.to_path_buf();
         path.push(config.names.project_file);
@@ -67,7 +67,7 @@ mod tests {
 
     #[test]
     fn get_config_from_file() {
-        let config = Config::get_from_dir(Path::new("../env_tests/mod_init")).unwrap();
+        let config = Config::from_dir(Path::new("fixtures/config")).unwrap();
         let expected = Config::new(String::from("test"), true);
         assert_eq!(config.project.name, expected.project.name);
     }
