@@ -1,11 +1,13 @@
 use crate::Todo;
-use std::collections::HashMap;
-use serde::{Deserialize, Serialize};
 use appconfig::AppConfig;
+use serde::{Deserialize, Serialize};
 use serde_json;
+use std::collections::HashMap;
 use std::fs::File;
 use std::io::{BufReader, Read};
 use std::path::Path;
+
+pub mod updater;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Project {
@@ -25,19 +27,18 @@ impl Project {
         let config = AppConfig::get();
         let mut path = config.get_project_dir_path(path.to_path_buf());
         path.push(config.names.project_directory.project_json);
-        
+
         if let Ok(file) = File::open(path) {
             let mut buf_reader = BufReader::new(file);
             let mut contents = String::new();
-            
+
             if let Ok(_) = buf_reader.read_to_string(&mut contents) {
                 if let Ok(result) = serde_json::from_str(&contents) {
                     return Some(result);
                 }
-            }
-            ;
+            };
         }
-        
+
         None
     }
 
@@ -57,12 +58,23 @@ impl Project {
 
         return Some(map);
     }
+
+    pub fn get_active_todos(&self) -> Vec<&Todo> {
+        self.todos.iter().filter(|todo| todo.is_active).collect()
+    }
+
+    pub fn get_inactive_todos(&self) -> Vec<Todo> {
+        self.todos
+            .iter()
+            .cloned()
+            .filter(|todo| !todo.is_active)
+            .collect()
+    }
 }
 
 impl PartialEq for Project {
     fn eq(&self, other: &Project) -> bool {
-        self.name == other.name
-        && self.todos == other.todos
+        self.name == other.name && self.todos == other.todos
     }
 }
 
@@ -108,16 +120,16 @@ mod tests_mod {
     fn could_read_project_file() {
         let project = Project::from_dir(Path::new("fixtures/project")).unwrap();
         let expected_project = Project::new(
-            "todoco".to_string(), 
+            "todoco".to_string(),
             vec![Todo::new(
                 "Use dialoguer Theme".to_string(),
                 SourceFile::new(
                     "dialog_config.rs".to_string(),
-                    "./ui/src/dialog_config.rs".to_string()
-                ), 
-                6, 
-                vec![]
-            )]
+                    "./ui/src/dialog_config.rs".to_string(),
+                ),
+                6,
+                vec![],
+            )],
         );
 
         assert_eq!(expected_project.name, project.name);

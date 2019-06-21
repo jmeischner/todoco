@@ -1,6 +1,6 @@
 use std::io::Result as IOResult;
 use std::path::PathBuf;
-use types::{Project, Config};
+use types::{Project, Config, project::updater};
 
 pub mod init;
 pub mod scan;
@@ -13,8 +13,7 @@ pub fn scan(path: PathBuf) -> Result<Project, &'static str> {
             Err(_) => (false, init::get_default_config(&path)),
         };
 
-        let files = scan::get_files(root_dir, &config);
-        let todos = scan::extract_todos_from_files(files);
+        let todos = scan::get_todos(root_dir, &config);
 
         let project = match todos {
             Ok(tds) => scan::build_project(tds, config),
@@ -22,7 +21,9 @@ pub fn scan(path: PathBuf) -> Result<Project, &'static str> {
         };
 
         if is_project {
-            if let Err(_) = export::project_to_path(&project, path.clone()) {
+            let mut saved_project = Project::from_dir(&path).unwrap_or(Project::new(String::new(), vec![]));
+            let aggregated_project = updater::update_project(&mut saved_project, &project);
+            if let Err(_) = export::project_to_path(&aggregated_project, path.clone()) {
                 return Err("It was not possible to export project results.");
             };
         };
