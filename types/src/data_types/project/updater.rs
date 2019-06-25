@@ -1,6 +1,6 @@
 use crate::{Project, Todo};
 
-pub fn update_project<'a, 'b>(old: &'a mut Project, new: &'b Project) -> Project {
+pub fn update_project(old: &mut Project, new: &Project) -> Project {
     let active_todos = old.get_active_todos();
     let mut inactive_todos = old.get_inactive_todos();
 

@@ -26,9 +26,10 @@ pub fn scan(path: PathBuf) -> Result<Project, &'static str> {
         };
 
         if is_project {
+            // Todo: Log Warning if it is_project but failed to load project from file
             let mut saved_project = Project::from_dir(&path).unwrap_or(Project::new(String::new(), vec![]));
-            let aggregated_project = updater::update_project(&mut saved_project, &project);
-            if let Err(_) = export::project_to_path(&aggregated_project, path.clone()) {
+            let project = updater::update_project(&mut saved_project, &project);
+            if let Err(_) = export::project_to_path(&project, path.clone()) {
                 return Err("It was not possible to export project results.");
             };
         };
