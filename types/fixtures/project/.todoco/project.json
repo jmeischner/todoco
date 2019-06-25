@@ -9,7 +9,8 @@
         "path": "./ui/src/dialog_config.rs"
       },
       "line": 6,
-      "tags": []
+      "tags": [],
+      "is_active": true
     }
   ]
 }

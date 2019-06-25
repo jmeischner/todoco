@@ -6,6 +6,11 @@ pub mod init;
 pub mod scan;
 
 // Todo: add error propagation
+
+/// Integration method for *todoco scan* option
+/// 
+/// # Arguments
+/// * `path` - A *PathBuf* which holds the base path from where the files get scanned for ToDo comments
 pub fn scan(path: PathBuf) -> Result<Project, &'static str> {
     if let Some(root_dir) = path.to_str() {
         let (is_project, config) = match Config::from_dir(&path) {

@@ -7,7 +7,7 @@ use strsim;
 use uuid::Uuid;
 
 // Todo: Research for best threshold value
-const EQUALITY_THRESHOLD: f64 = 0.93;
+const EQUALITY_THRESHOLD: f64 = 0.90;
 
 #[derive(Serialize, Deserialize, Debug, Clone, Eq)]
 pub struct Todo {
@@ -49,7 +49,7 @@ impl Todo {
             return Some(matched.clone());
         }
 
-        let (metric, matched) = others
+        let (_metric, matched) = others
             .iter()
             .map(|todo| (todo.get_string_metric(&self), Some(todo)))
             .filter(|(metric, _)| metric > &EQUALITY_THRESHOLD)
@@ -61,8 +61,6 @@ impl Todo {
                     Some(_) => (m2, t2),
                 },
             );
-
-        println!("String Metric: {}", metric);
 
         if let Some(matched) = matched {
             return Some(matched.clone());
