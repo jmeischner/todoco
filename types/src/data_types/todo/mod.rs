@@ -1,5 +1,6 @@
 use super::sourcefile::SourceFile;
 use super::tag::Tag;
+use log::debug;
 use serde::{Deserialize, Serialize};
 use std::cmp::Ordering;
 use std::f64;
@@ -63,6 +64,16 @@ impl Todo {
             );
 
         if let Some(matched) = matched {
+            debug!(
+                "String Metrics between:\n{} in file: {} at line: {} \n{} in file: {} at line: {}\nis {}",
+                self.text,
+                self.file.name,
+                self.line, 
+                matched.text,
+                matched.file.name,
+                matched.line,
+                _metric
+            );
             return Some(matched.clone());
         }
 

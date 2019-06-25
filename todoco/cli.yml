@@ -1,6 +1,11 @@
 name: ToDoCo
 author: Jan Meischner <jan.meischner@googlemail.com>
-about: Extracts Todos from Code
+about: Work with Todos in Code
+args:
+  - verbose:
+      short: v
+      multiple: true
+      help: Sets the level of verbosity
 subcommands:
   - scan:
       about: Scan directory for ToDo comments

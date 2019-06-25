@@ -1,9 +1,9 @@
-#[macro_use]
-extern crate clap;
-
-use clap::{App, ArgMatches};
+use clap::{App, ArgMatches, load_yaml};
 use std::env;
 use std::path::PathBuf;
+
+use simplelog::{TermLogger, LevelFilter, Config as LogConfig, TerminalMode};
+
 
 use export::format::taskpaper::TaskPaperBuilder;
 use appconfig::AppConfig;
@@ -12,11 +12,13 @@ use ui;
 use todoco;
 
 fn main() {
+
     let yaml = load_yaml!("../cli.yml");
     let matches = App::from_yaml(yaml)
         .version(clap::crate_version!())
         .get_matches();
 
+    set_verbosity_level(&matches);
     handle_scan(&matches);
     handle_init(&matches);
 }
@@ -57,5 +59,27 @@ fn handle_init(matches: &ArgMatches) {
         } else {
             eprintln!("Could not detect current directory.")
         }
+    }
+}
+
+fn set_verbosity_level(matches: &ArgMatches) {
+    match matches.occurrences_of("verbose") {
+        1 => {
+            TermLogger::init(LevelFilter::Warn, LogConfig::default(), TerminalMode::Mixed).unwrap();
+            println!("Sets verbosity level to WARN");
+        },
+        2 => {
+            TermLogger::init(LevelFilter::Info, LogConfig::default(), TerminalMode::Mixed).unwrap();
+            println!("Sets verbosity level to INFO");
+        },
+        3 => {
+            TermLogger::init(LevelFilter::Debug, LogConfig::default(), TerminalMode::Mixed).unwrap();
+            println!("Sets verbosity level to DEBUG");
+        },
+        4 => {
+            TermLogger::init(LevelFilter::Trace, LogConfig::default(), TerminalMode::Mixed).unwrap();
+            println!("Sets verbosity level to TRACE");
+        },
+        0 | _ => TermLogger::init(LevelFilter::Error, LogConfig::default(), TerminalMode::Mixed).unwrap(),
     }
 }

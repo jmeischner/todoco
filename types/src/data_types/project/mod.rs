@@ -1,5 +1,6 @@
 use crate::Todo;
 use appconfig::AppConfig;
+use log::error;
 use serde::{Deserialize, Serialize};
 use serde_json;
 use std::collections::HashMap;
@@ -27,14 +28,14 @@ impl Project {
         let config = AppConfig::get();
         let mut path = config.get_project_dir_path(path.to_path_buf());
         path.push(config.names.project_directory.project_json);
-
         if let Ok(file) = File::open(path) {
             let mut buf_reader = BufReader::new(file);
             let mut contents = String::new();
 
             if let Ok(_) = buf_reader.read_to_string(&mut contents) {
-                if let Ok(result) = serde_json::from_str(&contents) {
-                    return Some(result);
+                match serde_json::from_str(&contents) {
+                    Ok(result) => return Some(result),
+                    Err(e) => error!("Error while deserializing project.json: {}", e),
                 }
             };
         }

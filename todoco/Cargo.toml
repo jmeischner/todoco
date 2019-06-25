@@ -13,3 +13,4 @@ clap = {version = "^2.33.0", features= ["yaml"]}
 ignore = "^0.4.7"
 toml = "^0.4.2"
 regex = "^1.1.6"
+simplelog = "^0.6.0"
