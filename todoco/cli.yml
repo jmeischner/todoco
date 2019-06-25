@@ -12,10 +12,15 @@ subcommands:
       args:
         - DIR:
             help: Path to project which should be scanned.
-            required: true
+            default_value: .
         - export_taskpaper:
             short: t
             long: taskpaper
             help: Export todos to taskpaper file.
   - init:
       about: Initialize new ToDoCo project
+  - list:
+      about: List ToDo comments
+      args:
+        - KEYWORD:
+            help: Keyword to filter ToDos for

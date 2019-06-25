@@ -1,14 +1,14 @@
-use clap::{App, ArgMatches, load_yaml};
+use clap::{load_yaml, App, ArgMatches};
+use log::{debug, error, info, trace, warn};
 use std::env;
 use std::path::PathBuf;
-use log::{error, warn, info, trace, debug};
-
-use simplelog::{TermLogger, LevelFilter, Config as LogConfig, TerminalMode};
 
 
-use export::format::taskpaper::TaskPaperBuilder;
+use simplelog::{Config as LogConfig, LevelFilter, TermLogger, TerminalMode};
+
+
 use appconfig::AppConfig;
-use ui;
+use export::format::taskpaper::TaskPaperBuilder;
 
 use todoco;
 
@@ -22,6 +22,7 @@ fn main() {
     set_verbosity_level(&matches);
     handle_scan(&matches);
     handle_init(&matches);
+    handle_list(&matches);
 }
 
 fn handle_scan(matches: &ArgMatches) {
@@ -63,24 +64,49 @@ fn handle_init(matches: &ArgMatches) {
     }
 }
 
+fn handle_list(matches: &ArgMatches) {
+    if let Some(matches) = matches.subcommand_matches("list") {
+        let keyword = matches.value_of("KEYWORD");
+        match todoco::list(keyword) {
+            Ok(matches) => ui::print_list_matches::print(matches),
+            Err(e) => error!("{}", e),
+        }
+    }
+}
+
 fn set_verbosity_level(matches: &ArgMatches) {
     match matches.occurrences_of("verbose") {
         1 => {
             TermLogger::init(LevelFilter::Warn, LogConfig::default(), TerminalMode::Mixed).unwrap();
             warn!("Sets verbosity level to WARN");
-        },
+        }
         2 => {
             TermLogger::init(LevelFilter::Info, LogConfig::default(), TerminalMode::Mixed).unwrap();
             info!("Sets verbosity level to INFO");
-        },
+        }
         3 => {
-            TermLogger::init(LevelFilter::Debug, LogConfig::default(), TerminalMode::Mixed).unwrap();
+            TermLogger::init(
+                LevelFilter::Debug,
+                LogConfig::default(),
+                TerminalMode::Mixed,
+            )
+            .unwrap();
             debug!("Sets verbosity level to DEBUG");
-        },
+        }
         4 => {
-            TermLogger::init(LevelFilter::Trace, LogConfig::default(), TerminalMode::Mixed).unwrap();
+            TermLogger::init(
+                LevelFilter::Trace,
+                LogConfig::default(),
+                TerminalMode::Mixed,
+            )
+            .unwrap();
             trace!("Sets verbosity level to TRACE");
-        },
-        0 | _ => TermLogger::init(LevelFilter::Error, LogConfig::default(), TerminalMode::Mixed).unwrap(),
+        }
+        0 | _ => TermLogger::init(
+            LevelFilter::Error,
+            LogConfig::default(),
+            TerminalMode::Mixed,
+        )
+        .unwrap(),
     }
 }

@@ -1,12 +1,14 @@
-use crate::Todo;
+use crate::{SourceFile, Tag, Todo};
 use appconfig::AppConfig;
-use log::error;
+use itertools::Itertools;
 use serde::{Deserialize, Serialize};
 use serde_json;
 use std::collections::HashMap;
 use std::fs::File;
 use std::io::{BufReader, Read};
 use std::path::Path;
+use log::error;
+
 
 pub mod updater;
 
@@ -69,6 +71,36 @@ impl Project {
             .iter()
             .cloned()
             .filter(|todo| !todo.is_active)
+            .collect()
+    }
+
+    pub fn get_tags(&self) -> Vec<&Tag> {
+        self.todos
+            .iter()
+            .flat_map(|todo| &todo.tags)
+            .unique_by(|tag| &tag.name)
+            .collect()
+    }
+
+    pub fn get_files(&self) -> Vec<&SourceFile> {
+        self.todos
+            .iter()
+            .map(|todo| &todo.file)
+            .unique_by(|file| format!("{}/{}", &file.path, &file.name))
+            .collect()
+    }
+
+    pub fn get_todos_with_tag<'a>(&'a self, tag: &'a Tag) -> Vec<&'a Todo> {
+        self.todos
+            .iter()
+            .filter(|todo| todo.tags.iter().find(|t| t == &tag).is_some())
+            .collect()
+    }
+
+    pub fn get_todos_in_file(&self, file: &SourceFile) -> Vec<&Todo> {
+        self.todos
+            .iter()
+            .filter(|todo| &todo.file == file)
             .collect()
     }
 }

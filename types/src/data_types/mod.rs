@@ -4,3 +4,4 @@ pub mod projectfile;
 pub mod sourcefile;
 pub mod tag;
 pub mod todo;
+pub mod filtermatch;

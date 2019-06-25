@@ -7,3 +7,4 @@ pub use data_types::projectfile::ProjectFile;
 pub use data_types::sourcefile::SourceFile;
 pub use data_types::tag::Tag;
 pub use data_types::todo::Todo;
+pub use data_types::filtermatch::FilterMatch;
