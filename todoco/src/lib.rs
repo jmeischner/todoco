@@ -1,12 +1,8 @@
-use log::warn;
 use std::io::Result as IOResult;
 use std::path::PathBuf;
 use types::{project::updater, Config, FilterMatch, Project};
 
-
-
 pub mod init;
-
 pub mod list;
 pub mod scan;
 
@@ -28,13 +24,7 @@ pub fn scan(path: PathBuf) -> Result<Project, &'static str> {
         };
 
         if is_project {
-            let mut saved_project = match Project::from_dir(&path) {
-                Some(project) => project,
-                None => {
-                    warn!("It was not possible to read saved project informations.");
-                    Project::new(String::new(), vec![])
-                }
-            };
+            let mut saved_project = scan::get_saved_project(&path);
             let project = updater::update_project(&mut saved_project, &project);
             if let Err(_) = export::project_to_path(&project, path.clone()) {
                 return Err("It was not possible to export project results.");
