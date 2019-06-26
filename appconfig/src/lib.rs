@@ -1,10 +1,11 @@
 use serde::{Deserialize, Serialize};
-use toml;
-use std::path::PathBuf;
 
+use std::path::PathBuf;
+use toml;
 #[derive(Serialize, Deserialize)]
 pub struct AppConfig {
     pub names: Names,
+    pub default_values: DefaultValues,
 }
 
 impl AppConfig {
@@ -16,10 +17,11 @@ impl AppConfig {
     }
 
     pub fn get_project_dir_path(&self, mut path: PathBuf) -> PathBuf {
-    path.push(&self.names.project_directory.name);
-    path
+        path.push(&self.names.project_directory.name);
+        path
+    }
 }
-}
+
 
 #[derive(Serialize, Deserialize)]
 pub struct Names {
@@ -33,4 +35,9 @@ pub struct ProjectDirectory {
     pub name: String,
     pub project_json: String,
     pub export_taskpaper_extension: String,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct DefaultValues {
+    pub ignores: Vec<String>,
 }

@@ -6,3 +6,6 @@ ignore_file       = ".todocoignore"
     name = ".todoco"
     project_json = "project.json"
     export_taskpaper_extension = ".taskpaper"
+
+[default_values]
+ignores = ['!.git']

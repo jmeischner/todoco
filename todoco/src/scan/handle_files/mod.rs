@@ -1,9 +1,12 @@
-use ignore::{Walk, WalkBuilder};
+use ignore::{
+    overrides::{Override, OverrideBuilder},
+    Walk, WalkBuilder,
+};
 use indicatif::{ProgressBar, ProgressStyle};
+use log::debug;
 use std::fs::File;
 use std::io::Result as IOResult;
 use std::io::{BufRead, BufReader, Lines};
-
 
 use appconfig::AppConfig;
 use todo_regex::TodoRegexer;
@@ -20,32 +23,56 @@ pub fn get_files(dir: &str, config: &Config) -> Vec<SourceFile> {
 // Todo: Parallel Extraction
 pub fn extract_todos_from_files(files: Vec<SourceFile>) -> IOResult<Vec<Todo>> {
     let mut todos: Vec<Todo> = vec![];
-    let bar = ProgressBar::new(files.len() as u64);
-    bar.set_style(
-        ProgressStyle::default_bar()
-            .template("[{elapsed}] {bar:40.cyan/blue} {pos:>7.green/cyan} of {len:7.green/cyan}")
-            .progress_chars("=>-"),
-    );
+    let bar = build_progress_bar(files.len() as u64);
 
     for (index, file) in files.iter().enumerate() {
         let lines = read_lines_of_file(&file)?;
         let file_todos = extract_todos_from_content(lines, file);
         todos.extend(file_todos);
-        if index % 25 == 0 {
-            bar.inc(25);
+        if (index + 1) % 5 == 0 {
+            bar.inc(5);
         }
     }
+
     bar.finish();
     Ok(todos)
 }
+fn build_progress_bar(max: u64) -> ProgressBar {
+    let bar = ProgressBar::new(max);
+    bar.set_style(
+        ProgressStyle::default_bar()
+            .template("[{elapsed:.cyan/blue}] |{bar:40.cyan/blue}| {pos:>7.cyan/blue} of {len:7.cyan/blue}")
+            .progress_chars("=>-"),
+    );
+
+    bar
+}
 
 fn get_path_walker_from_dir(dir: &str, config: &Config) -> Walk {
+    debug!("Used config for WalkBuilder: {:?}", config);
+
+    let default_overrides = build_default_overrides(dir);
     let mut walker = WalkBuilder::new(dir);
-    walker.git_ignore(config.project.use_gitignore);
     walker.ignore(config.project.use_ignore);
-    walker.hidden(config.project.search_hidden);
     walker.add_custom_ignore_filename(AppConfig::get().names.ignore_file);
+    walker.git_ignore(config.project.use_gitignore);
+    walker.hidden(config.project.search_hidden);
+    walker.overrides(default_overrides);
+    debug!("Used walker: {:?}", walker);
+
     walker.build()
+}
+
+fn build_default_overrides(path: &str) -> Override {
+    let defaults = AppConfig::get().default_values.ignores;
+
+    let mut ignores = OverrideBuilder::new(path);
+
+    for ignore in &defaults {
+        ignores.add(ignore).unwrap();
+    }
+
+    ignores.build().unwrap()
 }
 
 fn build_file_from_path(paths: Walk) -> Vec<SourceFile> {
