@@ -24,3 +24,7 @@ subcommands:
       args:
         - KEYWORD:
             help: Keyword to filter ToDos for
+        - rescan:
+            short: r
+            long: rescan
+            help: Rescan project before listing the todos

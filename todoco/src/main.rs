@@ -12,6 +12,7 @@ use export::format::taskpaper::TaskPaperBuilder;
 
 use todoco;
 
+// Todo: Refactor status messages to ui module
 fn main() {
 
     let yaml = load_yaml!("../cli.yml");
@@ -27,8 +28,10 @@ fn main() {
 
 fn handle_scan(matches: &ArgMatches) {
     if let Some(matches) = matches.subcommand_matches("scan") {
+        println!("Start to scan project files:");
         let dir = matches.value_of("DIR").unwrap();
         let path = PathBuf::from(dir);
+        // Todo: Add error handling
         let project = todoco::scan(path.clone()).unwrap();
 
         // Todo: Build enum of export options @prio(1) @next-week
@@ -44,7 +47,7 @@ fn handle_scan(matches: &ArgMatches) {
                 println!("Finished! You got your {}{}!", project.name, extension);
             };
         } else {
-            ui::print_todo_list::print_project(&project);
+            println!("Finished scan of project and saved result.");
         }
     }
 }
@@ -66,8 +69,17 @@ fn handle_init(matches: &ArgMatches) {
 
 fn handle_list(matches: &ArgMatches) {
     if let Some(matches) = matches.subcommand_matches("list") {
+        let current_dir = todoco::list::build_current_dir_path();
+        if matches.is_present("rescan") {
+            println!("Rescan current directory.");
+            match todoco::scan(current_dir.clone()) {
+                Ok(_) => println!("Done!"),
+                Err(e) => error!("{}", e),
+            }
+        }
+
         let keyword = matches.value_of("KEYWORD");
-        match todoco::list(keyword) {
+        match todoco::list(keyword, current_dir) {
             Ok(matches) => ui::print_list_matches::print(matches),
             Err(e) => error!("{}", e),
         }

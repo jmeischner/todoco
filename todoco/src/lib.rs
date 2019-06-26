@@ -1,6 +1,8 @@
+use log::warn;
 use std::io::Result as IOResult;
 use std::path::PathBuf;
 use types::{project::updater, Config, FilterMatch, Project};
+
 
 
 pub mod init;
@@ -26,9 +28,13 @@ pub fn scan(path: PathBuf) -> Result<Project, &'static str> {
         };
 
         if is_project {
-            // Todo: Log Warning if it is_project but failed to load project from file
-            let mut saved_project =
-                Project::from_dir(&path).unwrap_or(Project::new(String::new(), vec![]));
+            let mut saved_project = match Project::from_dir(&path) {
+                Some(project) => project,
+                None => {
+                    warn!("It was not possible to read saved project informations.");
+                    Project::new(String::new(), vec![])
+                }
+            };
             let project = updater::update_project(&mut saved_project, &project);
             if let Err(_) = export::project_to_path(&project, path.clone()) {
                 return Err("It was not possible to export project results.");
@@ -56,8 +62,8 @@ pub fn init(config: Config, path: PathBuf) -> IOResult<()> {
 ///
 /// # Arguments
 /// * `keyword` - The keyword the todos should get filtered for
-pub fn list(keyword: Option<&str>) -> Result<FilterMatch, &'static str> {
-    let current_dir = list::build_current_dir_path();
+pub fn list(keyword: Option<&str>, current_dir: PathBuf) -> Result<FilterMatch, &'static str> {
+
     let (is_project, _config) = get_config_and_project_info_from(&current_dir);
     let project = list::get_project(is_project, &current_dir)?;
 

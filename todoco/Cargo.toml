@@ -9,9 +9,10 @@ ui = { path = "../ui" }
 export = { path = "../export" }
 appconfig = { path = "../appconfig" }
 types = { path = "../types" }
-clap = {version = "^2.33.0", features= ["yaml"]}
+clap = {version = "^2.33.0", features= ["yaml", "suggestions"]}
 ignore = "^0.4.7"
 toml = "^0.4.2"
 regex = "^1.1.6"
 simplelog = "^0.6.0"
 log = "^0.4.6"
+indicatif = "^0.11.0"

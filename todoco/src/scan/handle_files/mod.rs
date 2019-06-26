@@ -1,11 +1,13 @@
 use ignore::{Walk, WalkBuilder};
+use indicatif::{ProgressBar, ProgressStyle};
 use std::fs::File;
 use std::io::Result as IOResult;
 use std::io::{BufRead, BufReader, Lines};
 
+
 use appconfig::AppConfig;
 use todo_regex::TodoRegexer;
-use types::{SourceFile, Todo, Config};
+use types::{Config, SourceFile, Todo};
 
 mod todo_regex;
 
@@ -18,13 +20,22 @@ pub fn get_files(dir: &str, config: &Config) -> Vec<SourceFile> {
 // Todo: Parallel Extraction
 pub fn extract_todos_from_files(files: Vec<SourceFile>) -> IOResult<Vec<Todo>> {
     let mut todos: Vec<Todo> = vec![];
+    let bar = ProgressBar::new(files.len() as u64);
+    bar.set_style(
+        ProgressStyle::default_bar()
+            .template("[{elapsed}] {bar:40.cyan/blue} {pos:>7.green/cyan} of {len:7.green/cyan}")
+            .progress_chars("=>-"),
+    );
 
-    for file in files {
+    for (index, file) in files.iter().enumerate() {
         let lines = read_lines_of_file(&file)?;
         let file_todos = extract_todos_from_content(lines, file);
         todos.extend(file_todos);
+        if index % 25 == 0 {
+            bar.inc(25);
+        }
     }
-
+    bar.finish();
     Ok(todos)
 }
 
@@ -74,7 +85,7 @@ fn read_lines_of_file(file: &SourceFile) -> IOResult<Lines<BufReader<File>>> {
     Ok(reader)
 }
 
-fn extract_todos_from_content(lines: Lines<BufReader<File>>, file: SourceFile) -> Vec<Todo> {
+fn extract_todos_from_content(lines: Lines<BufReader<File>>, file: &SourceFile) -> Vec<Todo> {
     let mut todos: Vec<Todo> = vec![];
     let todo_regexer = TodoRegexer::new();
 
@@ -103,10 +114,10 @@ fn extract_todos_from_content(lines: Lines<BufReader<File>>, file: SourceFile) -
 // ~~~~~~~~~~~~~~~~~~~~ TESTS ~~~~~~~~~~~~~~~~~~~~ //
 #[cfg(test)]
 mod tests {
-    use types::{Todo, Tag, SourceFile};
-    use types::Config;
-    use std::path::PathBuf;
 
+    use std::path::PathBuf;
+    use types::Config;
+    use types::{SourceFile, Tag, Todo};
     #[test]
     fn find_paths_from_dir() {
         let path = "fixtures/mod_scan/";
