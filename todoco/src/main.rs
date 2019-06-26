@@ -1,5 +1,5 @@
 use clap::{load_yaml, App, ArgMatches};
-use log::{debug, error, info, trace, warn};
+use log::{debug, error, trace};
 use std::env;
 use std::path::PathBuf;
 
@@ -77,14 +77,6 @@ fn handle_list(matches: &ArgMatches) {
 fn set_verbosity_level(matches: &ArgMatches) {
     match matches.occurrences_of("verbose") {
         1 => {
-            TermLogger::init(LevelFilter::Warn, LogConfig::default(), TerminalMode::Mixed).unwrap();
-            warn!("Sets verbosity level to WARN");
-        }
-        2 => {
-            TermLogger::init(LevelFilter::Info, LogConfig::default(), TerminalMode::Mixed).unwrap();
-            info!("Sets verbosity level to INFO");
-        }
-        3 => {
             TermLogger::init(
                 LevelFilter::Debug,
                 LogConfig::default(),
@@ -93,20 +85,17 @@ fn set_verbosity_level(matches: &ArgMatches) {
             .unwrap();
             debug!("Sets verbosity level to DEBUG");
         }
-        4 => {
+        2 => {
             TermLogger::init(
                 LevelFilter::Trace,
                 LogConfig::default(),
                 TerminalMode::Mixed,
             )
             .unwrap();
-            trace!("Sets verbosity level to TRACE");
+            trace!("Sets verbosity level to Trace");
         }
-        0 | _ => TermLogger::init(
-            LevelFilter::Error,
-            LogConfig::default(),
-            TerminalMode::Mixed,
-        )
-        .unwrap(),
+        0 | _ => {
+            TermLogger::init(LevelFilter::Warn, LogConfig::default(), TerminalMode::Mixed).unwrap()
+        }
     }
 }
