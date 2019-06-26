@@ -1,15 +1,11 @@
 use clap::{load_yaml, App, ArgMatches};
 use log::{debug, error, trace};
-use std::env;
-use std::path::PathBuf;
-
-
 use simplelog::{Config as LogConfig, LevelFilter, TermLogger, TerminalMode};
-
+use std::env;
+use std::path::{Path, PathBuf};
 
 use appconfig::AppConfig;
 use export::format::taskpaper::TaskPaperBuilder;
-
 use todoco;
 
 // Todo: Refactor status messages to ui module
@@ -28,9 +24,18 @@ fn main() {
 
 fn handle_scan(matches: &ArgMatches) {
     if let Some(matches) = matches.subcommand_matches("scan") {
-        println!("Start to scan project files:");
+
         let dir = matches.value_of("DIR").unwrap();
         let path = PathBuf::from(dir);
+
+        if !path_is_project(&path) {
+            println!("Directory is no ToDoCo project.");
+            println!("Use `todoco init` to initialize a new project.");
+            println!("Or use `todoco list` to list all ToDos in current directory.");
+            return;
+        };
+
+        println!("Start to scan project files:");
         // Todo: Add error handling
         let project = todoco::scan(path.clone()).unwrap();
 
@@ -110,4 +115,11 @@ fn set_verbosity_level(matches: &ArgMatches) {
             TermLogger::init(LevelFilter::Warn, LogConfig::default(), TerminalMode::Mixed).unwrap()
         }
     }
+}
+
+fn path_is_project(path: &Path) -> bool {
+    let project_file = appconfig::AppConfig::get().names.project_file;
+    let mut path = path.to_path_buf();
+    path.push(project_file);
+    path.exists()
 }
