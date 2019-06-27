@@ -1,10 +1,7 @@
 use std::io::Result as IOResult;
 use std::path::PathBuf;
-use types::{project::updater, Config, FilterMatch, Project};
-
-pub mod init;
-pub mod list;
-pub mod scan;
+use todofilter;
+use types::{config, Config, FilterMatch, Project};
 
 // Todo: add error propagation
 
@@ -13,28 +10,7 @@ pub mod scan;
 /// # Arguments
 /// * `path` - A *PathBuf* which holds the base path from where the files get scanned for ToDo comments
 pub fn scan(path: PathBuf) -> Result<Project, &'static str> {
-    if let Some(root_dir) = path.to_str() {
-        let (is_project, config) = get_config_and_project_info_from(&path);
-
-        let todos = scan::get_todos(root_dir, &config);
-
-        let project = match todos {
-            Ok(tds) => scan::build_project(tds, config),
-            Err(_) => return Err("It was not possible to scan the files of the current path."),
-        };
-
-        if is_project {
-            let mut saved_project = scan::get_saved_project(&path);
-            let project = updater::update_project(&mut saved_project, &project);
-            if let Err(_) = export::project_to_path(&project, path.clone()) {
-                return Err("It was not possible to export project results.");
-            };
-        };
-
-        Ok(project)
-    } else {
-        Err("It was not possible to handle given path.")
-    }
+    todoscanner::scan(path)
 }
 
 /// Integration method for *todoco init* option
@@ -55,10 +31,10 @@ pub fn init(config: Config, path: PathBuf) -> IOResult<()> {
 pub fn list(keyword: Option<&str>, current_dir: PathBuf) -> Result<FilterMatch, &'static str> {
 
     let (is_project, _config) = get_config_and_project_info_from(&current_dir);
-    let project = list::get_project(is_project, &current_dir)?;
+    let project = todofilter::get_project(is_project, &current_dir)?;
 
     if let Some(keyword) = keyword {
-        Ok(list::get_matching_todos(keyword, &project))
+        Ok(todofilter::get_matching_todos(keyword, &project))
     } else {
         match project.todos.len() {
             0 => Ok(FilterMatch::None),
@@ -70,6 +46,6 @@ pub fn list(keyword: Option<&str>, current_dir: PathBuf) -> Result<FilterMatch, 
 fn get_config_and_project_info_from(path: &PathBuf) -> (bool, Config) {
     match Config::from_dir(&path) {
         Ok(c) => (true, c),
-        Err(_) => (false, init::get_default_config(&path)),
+        Err(_) => (false, config::get_default_config(&path)),
     }
 }

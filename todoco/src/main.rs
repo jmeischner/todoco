@@ -7,6 +7,7 @@ use std::path::{Path, PathBuf};
 use appconfig::AppConfig;
 use export::format::taskpaper::TaskPaperBuilder;
 use todoco;
+use todofilter;
 
 // Todo: Refactor status messages to ui module
 fn main() {
@@ -20,6 +21,7 @@ fn main() {
     handle_scan(&matches);
     handle_init(&matches);
     handle_list(&matches);
+    handle_test(&matches);
 }
 
 fn handle_scan(matches: &ArgMatches) {
@@ -74,7 +76,7 @@ fn handle_init(matches: &ArgMatches) {
 
 fn handle_list(matches: &ArgMatches) {
     if let Some(matches) = matches.subcommand_matches("list") {
-        let current_dir = todoco::list::build_current_dir_path();
+        let current_dir = todofilter::build_current_dir_path();
         if matches.is_present("rescan") {
             println!("Rescan current directory.");
             match todoco::scan(current_dir.clone()) {
@@ -88,6 +90,12 @@ fn handle_list(matches: &ArgMatches) {
             Ok(matches) => ui::print_list_matches::print(matches),
             Err(e) => error!("{}", e),
         }
+    }
+}
+
+fn handle_test(matches: &ArgMatches) {
+    if let Some(matches) = matches.subcommand_matches("test") {
+        ui::test_console::test();
     }
 }
 

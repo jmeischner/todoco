@@ -1,0 +1,14 @@
+[package]
+name = "todoscanner"
+version = "0.1.0"
+authors = ["Jan Meischner <jan.meischner@googlemail.com>"]
+edition = "2018"
+
+[dependencies]
+types = { path = "../types" }
+appconfig = { path = "../appconfig" }
+export = { path = "../export" }
+log = "^0.4.6"
+indicatif = "^0.11.0"
+ignore = "^0.4.7"
+regex = "^1.1.6"

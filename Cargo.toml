@@ -4,4 +4,6 @@ members = [
     "ui",
     "export",
     "appconfig",
+    "todofilter",
+    "todoscanner"
 ]

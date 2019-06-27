@@ -1,0 +1,10 @@
+[package]
+name = "todofilter"
+version = "0.1.0"
+authors = ["Jan Meischner <jan.meischner@googlemail.com>"]
+edition = "2018"
+
+[dependencies]
+types = {path = "../types"}
+todoscanner = {path= "../todoscanner"}
+log = "^0.4.6"

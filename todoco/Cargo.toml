@@ -9,6 +9,8 @@ ui = { path = "../ui" }
 export = { path = "../export" }
 appconfig = { path = "../appconfig" }
 types = { path = "../types" }
+todofilter = { path = "../todofilter" }
+todoscanner = { path = "../todoscanner" }
 clap = {version = "^2.33.0", features= ["yaml", "suggestions"]}
 ignore = "^0.4.7"
 toml = "^0.4.2"

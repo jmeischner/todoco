@@ -28,3 +28,4 @@ subcommands:
             short: r
             long: rescan
             help: Rescan project before listing the todos
+  - test:

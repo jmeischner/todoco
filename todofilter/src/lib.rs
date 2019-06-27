@@ -2,6 +2,7 @@ use types::{FilterMatch, Project, SourceFile, Tag, Todo};
 
 use log::warn;
 use std::path::{Path, PathBuf};
+use todoscanner;
 
 
 pub fn build_current_dir_path() -> PathBuf {
@@ -16,11 +17,11 @@ pub fn get_project(is_project: bool, path: &Path) -> Result<Project, &'static st
             Some(project) => Ok(project),
             None => {
                 warn!("Could not read saved project information, rescan project!");
-                crate::scan(path.to_path_buf())
+                todoscanner::scan(path.to_path_buf())
             }
         }
     } else {
-        crate::scan(path.to_path_buf())
+        todoscanner::scan(path.to_path_buf())
     }
 }
 
