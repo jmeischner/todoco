@@ -17,6 +17,7 @@ impl<'a, I, P> PagePrinter<'a, I, P>
 where P: ItemPrinter<I> {
     /// Constructur
     pub fn new(items: &'a Vec<I>, height: usize, printer: P) -> PagePrinter<I, P> {
+
         PagePrinter {
             pager: Pager::new(items, height),
             lines_on_screen: 0,

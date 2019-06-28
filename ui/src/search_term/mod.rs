@@ -1,10 +1,10 @@
 
 use crate::helper;
 use console::{style, Key, Term};
+
 use pageprinter::printer::itemprinter::ItemPrinter;
 use pageprinter::printer::todoprinter::TodoPrinter;
 use pageprinter::PagePrinter;
-
 use std::io::Result as IOResult;
 use types::Project;
 mod pageprinter;
@@ -73,10 +73,11 @@ impl SearchTerm {
     fn list_all(&self) -> IOResult<()> {
         self.clear()?;
         helper::hbar(&self.term)?;
-        let area_height = helper::get_term_height(&self.term) - 2;
-        let printer = TodoPrinter::new();
-        let mut page_printer = PagePrinter::new(&self.project.todos, area_height, printer);
+        let area_height = helper::get_term_height(&self.term) - HEADER_LINES;
+        let mut page_printer =
+            PagePrinter::new(&self.project.todos, area_height, TodoPrinter::new());
         page_printer.print_current()?;
+        self.print_list_all_menu(true)?;
 
         loop {
             let key = self.term.read_key()?;
@@ -86,13 +87,35 @@ impl SearchTerm {
                         break;
                     }
                 }
-                Key::ArrowDown | Key::ArrowRight => page_printer.print_next()?,
-                Key::ArrowUp | Key::ArrowLeft => page_printer.print_prev()?,
+                Key::ArrowDown | Key::ArrowRight => {
+                    page_printer.print_next()?;
+                    self.print_list_all_menu(false)?;
+                }
+                Key::ArrowUp | Key::ArrowLeft => {
+                    page_printer.print_prev()?;
+                    self.print_list_all_menu(false)?;
+                }
                 _ => {}
             }
         }
 
+
         self.start()
+    }
+
+    fn print_list_all_menu(&self, initial: bool) -> IOResult<()> {
+        if !initial {
+            self.term.clear_last_lines(2)?;
+        };
+
+        helper::hbar(&self.term)?;
+        let menu_line = format!(
+            "{}: Next Page | {}: Previous Page | {}: Quit",
+            style("▶|▼").blue(),
+            style("◀|▲").blue(),
+            style("q").blue(),
+        );
+        self.term.write_line(&menu_line)
     }
 
 }
