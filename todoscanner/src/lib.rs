@@ -1,11 +1,11 @@
 use export;
 use std::path::PathBuf;
-use types::{config, project::updater, Config, Project};
+use types::{config::helper, project::updater, Project};
 pub mod scan;
 
 pub fn scan(path: PathBuf) -> Result<Project, &'static str> {
     if let Some(root_dir) = path.to_str() {
-        let (is_project, config) = get_config_and_project_info_from(&path);
+        let (is_project, config) = helper::get_config_and_project_info_from(&path);
 
         let todos = scan::get_todos(root_dir, &config);
 
@@ -25,13 +25,5 @@ pub fn scan(path: PathBuf) -> Result<Project, &'static str> {
         Ok(project)
     } else {
         Err("It was not possible to handle given path.")
-    }
-}
-
-// Todo: remove redundant code from lib.rs in todoco module @tidyup
-fn get_config_and_project_info_from(path: &PathBuf) -> (bool, Config) {
-    match Config::from_dir(&path) {
-        Ok(c) => (true, c),
-        Err(_) => (false, config::get_default_config(&path)),
     }
 }

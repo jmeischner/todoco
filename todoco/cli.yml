@@ -28,4 +28,5 @@ subcommands:
             short: r
             long: rescan
             help: Rescan project before listing the todos
-  - test:
+  - search:
+      about: Start interactive terminal environment to query todos

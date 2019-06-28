@@ -2,6 +2,7 @@ use serde::{Deserialize, Serialize};
 
 use std::path::PathBuf;
 use toml;
+
 #[derive(Serialize, Deserialize)]
 pub struct AppConfig {
     pub names: Names,

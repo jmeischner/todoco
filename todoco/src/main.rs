@@ -3,6 +3,7 @@ use log::{debug, error, trace};
 use simplelog::{Config as LogConfig, LevelFilter, TermLogger, TerminalMode};
 use std::env;
 use std::path::{Path, PathBuf};
+use types::config::helper;
 
 use appconfig::AppConfig;
 use export::format::taskpaper::TaskPaperBuilder;
@@ -21,7 +22,7 @@ fn main() {
     handle_scan(&matches);
     handle_init(&matches);
     handle_list(&matches);
-    handle_test(&matches);
+    handle_search(&matches);
 }
 
 fn handle_scan(matches: &ArgMatches) {
@@ -86,16 +87,20 @@ fn handle_list(matches: &ArgMatches) {
         }
 
         let keyword = matches.value_of("KEYWORD");
-        match todoco::list(keyword, current_dir) {
+        match todofilter::get_filtered_todos(keyword, current_dir) {
             Ok(matches) => ui::print_list_matches::print(matches),
             Err(e) => error!("{}", e),
         }
     }
 }
 
-fn handle_test(matches: &ArgMatches) {
-    if let Some(matches) = matches.subcommand_matches("test") {
-        ui::test_console::test();
+fn handle_search(matches: &ArgMatches) {
+    if let Some(_matches) = matches.subcommand_matches("search") {
+        let current_dir = todofilter::build_current_dir_path();
+        let (is_project, _config) = helper::get_config_and_project_info_from(&current_dir);
+        // todo: handle error @error
+        let project = todofilter::get_project(is_project, &current_dir).unwrap();
+        ui::search_term::start(&project);
     }
 }
 

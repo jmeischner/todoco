@@ -2,7 +2,7 @@ use ansi_term::Color::{Blue, Green};
 
 use types::{Project};
 
-use super::helper::*;
+use super::helper_old::*;
 
 pub fn print_project(project: &Project) {
     hbar();

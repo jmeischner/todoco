@@ -7,4 +7,5 @@ edition = "2018"
 [dependencies]
 types = {path = "../types"}
 todoscanner = {path= "../todoscanner"}
+appconfig = { path = "../appconfig" }
 log = "^0.4.6"

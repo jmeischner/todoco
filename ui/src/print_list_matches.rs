@@ -2,7 +2,7 @@ use ansi_term::Color::{Green, Red};
 
 use types::{FilterMatch, Todo};
 
-use super::helper::*;
+use super::helper_old::*;
 
 pub fn print(matches: FilterMatch) {
     match matches {

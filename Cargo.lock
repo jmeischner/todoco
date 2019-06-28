@@ -820,6 +820,7 @@ dependencies = [
 name = "todofilter"
 version = "0.1.0"
 dependencies = [
+ "appconfig 0.1.0",
  "log 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "todoscanner 0.1.0",
  "types 0.1.0",
@@ -872,6 +873,7 @@ dependencies = [
  "ansi_term 0.11.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "console 0.7.7 (registry+https://github.com/rust-lang/crates.io-index)",
  "dialoguer 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "log 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "types 0.1.0",
 ]
 

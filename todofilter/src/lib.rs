@@ -1,8 +1,24 @@
-use types::{FilterMatch, Project, SourceFile, Tag, Todo};
-
+use types::{config::helper, FilterMatch, Project, SourceFile, Tag, Todo};
 use log::warn;
 use std::path::{Path, PathBuf};
 use todoscanner;
+
+pub fn get_filtered_todos(
+    keyword: Option<&str>,
+    path: PathBuf,
+) -> Result<FilterMatch, &'static str> {
+    let (is_project, _config) = helper::get_config_and_project_info_from(&path);
+    let project = get_project(is_project, &path)?;
+
+    if let Some(keyword) = keyword {
+        Ok(get_matching_todos(keyword, &project))
+    } else {
+        match project.todos.len() {
+            0 => Ok(FilterMatch::None),
+            _ => Ok(FilterMatch::All(project.todos)),
+        }
+    }
+}
 
 
 pub fn build_current_dir_path() -> PathBuf {
@@ -25,7 +41,7 @@ pub fn get_project(is_project: bool, path: &Path) -> Result<Project, &'static st
     }
 }
 
-pub fn get_matching_todos<'a>(keyword: &'a str, project: &Project) -> FilterMatch {
+fn get_matching_todos<'a>(keyword: &'a str, project: &Project) -> FilterMatch {
     if let Some(matching_tags) = check_for_keyword_in_tags(keyword, project) {
         let todos = matching_tags
             .iter()
