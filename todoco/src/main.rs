@@ -10,6 +10,8 @@ use export::format::taskpaper::TaskPaperBuilder;
 use todoco;
 use todofilter;
 
+use ui::search_term::SearchTerm;
+
 // Todo: Refactor status messages to ui module
 fn main() {
 
@@ -100,7 +102,8 @@ fn handle_search(matches: &ArgMatches) {
         let (is_project, _config) = helper::get_config_and_project_info_from(&current_dir);
         // todo: handle error @error
         let project = todofilter::get_project(is_project, &current_dir).unwrap();
-        ui::search_term::start(&project);
+        let term = SearchTerm::new(project);
+        term.start().unwrap();
     }
 }
 

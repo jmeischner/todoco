@@ -1,24 +1,27 @@
-use crate::helper;
 use console::Term;
 use pager::Pager;
-
 use std::io::Result as IOResult;
-use types::Todo;
-mod pager;
+use printer::itemprinter::ItemPrinter;
 
-pub struct PagePrinter<'a> {
-    pager: Pager<'a>,
+mod pager;
+pub mod printer;
+
+pub struct PagePrinter<'a, I, P> {
+    pager: Pager<'a, I>,
+    printer: P,
     lines_on_screen: usize,
     term: Term,
 }
 
-impl<'a> PagePrinter<'a> {
+impl<'a, I, P> PagePrinter<'a, I, P>
+where P: ItemPrinter<I> {
     /// Constructur
-    pub fn new(items: &'a Vec<Todo>, height: usize) -> PagePrinter {
+    pub fn new(items: &'a Vec<I>, height: usize, printer: P) -> PagePrinter<I, P> {
         PagePrinter {
             pager: Pager::new(items, height),
             lines_on_screen: 0,
             term: Term::stdout(),
+            printer: printer
         }
     }
 
@@ -28,7 +31,7 @@ impl<'a> PagePrinter<'a> {
         let items = self.pager.current();
 
         self.lines_on_screen = items.len();
-        helper::print_todos(&self.term, items)?;
+        self.printer.print_items(&self.term, items)?;
 
         Ok(())
     }
@@ -39,7 +42,7 @@ impl<'a> PagePrinter<'a> {
         let items = self.pager.next();
 
         self.lines_on_screen = items.len();
-        helper::print_todos(&self.term, items)?;
+        self.printer.print_items(&self.term, items)?;
 
         Ok(())
     }
@@ -50,7 +53,7 @@ impl<'a> PagePrinter<'a> {
         let items = self.pager.prev();
 
         self.lines_on_screen = items.len();
-        helper::print_todos(&self.term, items)?;
+        self.printer.print_items(&self.term, items)?;
 
         Ok(())
     }
