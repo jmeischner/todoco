@@ -1,20 +1,24 @@
 use console::Term;
 use pager::Pager;
-use std::io::Result as IOResult;
-use printer::itemprinter::ItemPrinter;
 
+use printer::itemprinter::ItemPrinter;
+use std::io::Result as IOResult;
 mod pager;
 pub mod printer;
 
-pub struct PagePrinter<'a, I, P> {
+#[derive(Clone)]
+pub struct PagePrinter<'a, I: Clone, P: Clone> {
     pager: Pager<'a, I>,
     printer: &'a P,
     lines_on_screen: usize,
     term: Term,
 }
 
-impl<'a, I, P> PagePrinter<'a, I, P>
-where P: ItemPrinter<I> {
+// Todo: What if there is only one page to show?
+impl<'a, I: Clone, P: Clone> PagePrinter<'a, I, P>
+where
+    P: ItemPrinter<I>,
+{
     /// Constructur
     pub fn new(items: &'a Vec<I>, height: usize, printer: &'a P) -> PagePrinter<'a, I, P> {
 
@@ -22,7 +26,7 @@ where P: ItemPrinter<I> {
             pager: Pager::new(items, height),
             lines_on_screen: 0,
             term: Term::stdout(),
-            printer: printer
+            printer: printer,
         }
     }
 

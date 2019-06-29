@@ -1,12 +1,18 @@
 use super::itemprinter::ItemPrinter;
 use std::io::Result as IOResult;
 use console::Term;
+use std::marker::PhantomData;
 
-pub struct TextPrinter {}
+#[derive(Clone)]
+pub struct TextPrinter {
+    name: PhantomData<String>
+}
 
 impl ItemPrinter<String> for TextPrinter {
     fn new() -> TextPrinter {
-        TextPrinter {}
+        TextPrinter {
+            name: PhantomData
+        }
     }
 
     fn print_items(&self, term: &Term, items: &[String]) -> IOResult<()> {

@@ -3,14 +3,13 @@ use log::{debug, error, trace};
 use simplelog::{Config as LogConfig, LevelFilter, TermLogger, TerminalMode};
 use std::env;
 use std::path::{Path, PathBuf};
-use types::config::helper;
 
 use appconfig::AppConfig;
 use export::format::taskpaper::TaskPaperBuilder;
 use todoco;
 use todofilter;
 
-use ui::search::SearchTerm;
+use ui::search;
 
 // Todo: Refactor status messages to ui module
 fn main() {
@@ -98,12 +97,7 @@ fn handle_list(matches: &ArgMatches) {
 
 fn handle_search(matches: &ArgMatches) {
     if let Some(_matches) = matches.subcommand_matches("search") {
-        let current_dir = todofilter::build_current_dir_path();
-        let (is_project, _config) = helper::get_config_and_project_info_from(&current_dir);
-        // todo: handle error @error
-        let project = todofilter::get_project(is_project, &current_dir).unwrap();
-        let term = SearchTerm::new(project);
-        term.start().unwrap();
+        search::start();
     }
 }
 

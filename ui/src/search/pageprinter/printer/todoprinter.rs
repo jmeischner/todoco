@@ -4,6 +4,7 @@ use types::Todo;
 use std::io::Result as IOResult;
 use console::{Term, style};
 
+#[derive(Clone)]
 pub struct TodoPrinter {}
 
 impl TodoPrinter {
