@@ -7,7 +7,8 @@ use pageprinter::printer::todoprinter::TodoPrinter;
 use pageprinter::PagePrinter;
 use std::io::Result as IOResult;
 use types::Project;
-mod pageprinter;
+pub mod pageprinter;
+mod term;
 
 const HEADER_LINES: usize = 4;
 

@@ -8,7 +8,7 @@ pub mod printer;
 
 pub struct PagePrinter<'a, I, P> {
     pager: Pager<'a, I>,
-    printer: P,
+    printer: &'a P,
     lines_on_screen: usize,
     term: Term,
 }
@@ -16,7 +16,7 @@ pub struct PagePrinter<'a, I, P> {
 impl<'a, I, P> PagePrinter<'a, I, P>
 where P: ItemPrinter<I> {
     /// Constructur
-    pub fn new(items: &'a Vec<I>, height: usize, printer: P) -> PagePrinter<I, P> {
+    pub fn new(items: &'a Vec<I>, height: usize, printer: &'a P) -> PagePrinter<'a, I, P> {
 
         PagePrinter {
             pager: Pager::new(items, height),

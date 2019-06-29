@@ -10,7 +10,7 @@ use export::format::taskpaper::TaskPaperBuilder;
 use todoco;
 use todofilter;
 
-use ui::search_term::SearchTerm;
+use ui::search::SearchTerm;
 
 // Todo: Refactor status messages to ui module
 fn main() {
