@@ -1,5 +1,6 @@
-use std::cmp;
 
+use log::debug;
+use std::cmp;
 /// Struct to handle paging of
 /// a vector of items
 ///
@@ -49,6 +50,11 @@ impl<'a, I> Pager<'a, I> {
         }
     }
 
+    /// Returns the number of lines on one page
+    pub fn page_height(&self) -> usize {
+        self.height
+    }
+
     /// Function to get items of given page
     ///
     /// # Arguments
@@ -56,6 +62,7 @@ impl<'a, I> Pager<'a, I> {
     fn get_page(&self, page: usize) -> &[I] {
         let start_index = (page - 1) * self.get_items_per_page();
         let end_index = cmp::min(page * self.get_items_per_page(), self.items.len());
+        // debug!("Start: {}, End: {}", start_index, end_index);
         &self.items[start_index..end_index]
     }
 

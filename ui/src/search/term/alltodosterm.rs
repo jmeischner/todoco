@@ -71,7 +71,7 @@ impl SearchTerm<Todo, TodoPrinter> for AllTodosTerm {
     }
 
     fn get_header_lines(&self) -> usize {
-        4
+        1
     }
 
     fn get_footer_lines(&self) -> usize {

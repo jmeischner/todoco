@@ -5,8 +5,9 @@ use console::{Key, Term};
 use std::io::Result as IOResult;
 use std::marker::PhantomData;
 
-pub mod mainterm;
+
 pub mod alltodosterm;
+pub mod mainterm;
 
 pub trait SearchTerm<I: Clone, P: Clone>
 where
@@ -22,11 +23,16 @@ where
     fn main(&self) -> IOResult<()> {
         self.header()?;
         let items = &self.get_items();
-        let height = helper::get_term_height(&self.get_term()) - self.get_header_lines();
+        let height = helper::get_term_height(&self.get_term())
+            - self.get_header_lines()
+            - self.get_footer_lines()
+            - 1; // Line for read_key
+
         let printer = self.get_printer();
+        // Todo: Refactor .clone()
         let mut page_printer = PagePrinter::new(items, height, printer).clone();
-        page_printer.print_current()?;
-        self.term_footer(true)?;
+        page_printer.print_start_page()?;
+        self.footer()?;
 
         loop {
             let key = self.get_term().read_key()?;
@@ -39,12 +45,14 @@ where
                     }
                 }
                 Key::ArrowDown | Key::ArrowRight => {
+                    self.clear_footer_lines()?;
                     page_printer.print_next()?;
-                    self.term_footer(false)?;
+                    self.footer()?;
                 }
                 Key::ArrowUp | Key::ArrowLeft => {
+                    self.clear_footer_lines()?;
                     page_printer.print_prev()?;
-                    self.term_footer(false)?;
+                    self.footer()?;
                 }
                 _ => {}
             }
@@ -53,12 +61,8 @@ where
         self.on_loop_end()
     }
     fn on_loop_end(&self) -> IOResult<()>;
-    fn term_footer(&self, initial: bool) -> IOResult<()> {
-        if !initial {
-            self.get_term().clear_last_lines(self.get_footer_lines())?;
-        }
-
-        self.footer()
+    fn clear_footer_lines(&self) -> IOResult<()> {
+        self.get_term().clear_last_lines(self.get_footer_lines())
     }
     fn footer(&self) -> IOResult<()>;
     fn get_header_lines(&self) -> usize;

@@ -97,7 +97,10 @@ fn handle_list(matches: &ArgMatches) {
 
 fn handle_search(matches: &ArgMatches) {
     if let Some(_matches) = matches.subcommand_matches("search") {
-        search::start();
+        match search::start() {
+            Ok(_) => {}
+            Err(e) => error!("Something went wrong: {}", e),
+        }
     }
 }
 

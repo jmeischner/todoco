@@ -1,7 +1,7 @@
 use crate::helper;
 use crate::search::pageprinter::printer::itemprinter::ItemPrinter;
-use crate::search::pageprinter::printer::todoprinter::TodoPrinter;
 use crate::search::pageprinter::printer::textprinter::TextPrinter;
+use crate::search::pageprinter::printer::todoprinter::TodoPrinter;
 use crate::search::term::alltodosterm::AllTodosTerm;
 use crate::search::term::SearchTerm;
 use crate::search::term::TermDialog;

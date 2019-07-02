@@ -1,8 +1,10 @@
 use super::itemprinter::ItemPrinter;
-use types::Tag;
-use std::io::Result as IOResult;
-use console::Term;
 
+use console::Term;
+use std::io::Result as IOResult;
+use types::Tag;
+
+#[derive(Clone)]
 pub struct TagPrinter {}
 
 impl ItemPrinter<Tag> for TagPrinter {
