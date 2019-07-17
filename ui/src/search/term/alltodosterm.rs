@@ -37,7 +37,7 @@ impl SearchTerm<Todo, TodoPrinter> for AllTodosTerm {
         }
     }
 
-    fn on_loop_end(&self) -> IOResult<()> {
+    fn on_quit(&self) -> IOResult<()> {
         search::start()
     }
 

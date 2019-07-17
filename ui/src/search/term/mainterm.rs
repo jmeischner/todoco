@@ -6,7 +6,7 @@ use crate::search::term::alltodosterm::AllTodosTerm;
 use crate::search::term::SearchTerm;
 use crate::search::term::TermDialog;
 
-use console::{style, Term};
+use console::{style, Emoji, Term};
 use std::io::Result as IOResult;
 use todofilter;
 use types::config::helper as types_helper;
@@ -51,8 +51,17 @@ impl SearchTerm<String, TextPrinter> for MainTerm {
         }
     }
 
-    fn on_loop_end(&self) -> IOResult<()> {
-        self.term.clear_screen()
+    fn on_quit(&self) -> IOResult<()> {
+        self.term.clear_screen()?;
+
+        let goodbye_line = format!(
+            "Goodbye {} and Thank You {}",
+            Emoji("👋", ""),
+            Emoji("🙏", "")
+        );
+
+        self.term
+            .write_line(&format!("{}", style(goodbye_line).bold()))
     }
 
     fn get_footer_options(&self) -> Vec<FooterOption> {

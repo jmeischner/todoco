@@ -9,6 +9,17 @@ use std::marker::PhantomData;
 pub mod alltodosterm;
 pub mod mainterm;
 
+/// Trait for implementing specific term ui
+/// of the search cli verb
+///
+/// # Function
+/// `new` - create a new instance of term
+/// `get_items` - getter of items hold by the term
+/// `get_printer` - getter of the printer corresponding to the term
+/// `char_match` - matcher of keyboard input keys to corresponding actions
+/// `on_quit` - action to perform when closing ui
+/// `get_footer_options` - Options corresponding to `char_match` actions
+/// `headline` - function returning the headline
 pub trait SearchTerm<I: Clone, P: Clone>
 where
     P: ItemPrinter<I>,
@@ -17,11 +28,14 @@ where
     fn get_items(&self) -> &Vec<I>;
     fn get_printer(&self) -> &P;
     fn char_match(&self, c: char) -> IOResult<bool>;
-    fn on_loop_end(&self) -> IOResult<()>;
+    fn on_quit(&self) -> IOResult<()>;
     fn get_footer_options(&self) -> Vec<FooterOption>;
     fn headline(&self) -> String;
 }
 
+/// Struct for giving the `TermDialog`
+/// an overview of the `SearchTerm`
+/// footer options
 pub struct FooterOption {
     key: String,
     description: String,
@@ -36,6 +50,13 @@ impl FooterOption {
     }
 }
 
+/// Struct which is the outer shell
+/// of the interactive `SearchTerm`
+/// solution
+///
+/// # Properties
+/// `search` - Holds an instance of an SearchTerm
+/// `term` - Instance of console::Term
 pub struct TermDialog<I, P, S> {
     items: PhantomData<I>,
     printer: PhantomData<P>,
@@ -97,7 +118,7 @@ impl<I: Clone, P: ItemPrinter<I> + Clone, S: SearchTerm<I, P> + Clone> TermDialo
             }
         }
 
-        self.search.on_loop_end()
+        self.search.on_quit()
     }
 
     fn get_term_height(&self) -> usize {
