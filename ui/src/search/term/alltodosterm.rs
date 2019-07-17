@@ -1,10 +1,9 @@
-use crate::helper;
+use super::FooterOption;
 use crate::search;
 use crate::search::pageprinter::printer::todoprinter::TodoPrinter;
 use crate::search::term::SearchTerm;
-use console::{Term};
+use console::{style, Term};
 use std::io::Result as IOResult;
-use super::FooterOption;
 use types::Todo;
 
 #[derive(Clone)]
@@ -31,11 +30,6 @@ impl SearchTerm<Todo, TodoPrinter> for AllTodosTerm {
         &self.printer
     }
 
-    fn header(&self) -> IOResult<()> {
-        helper::hbar(&self.term)
-    }
-
-
     fn char_match(&self, c: char) -> IOResult<bool> {
         match c {
             'q' => Ok(true),
@@ -48,14 +42,10 @@ impl SearchTerm<Todo, TodoPrinter> for AllTodosTerm {
     }
 
     fn get_footer_options(&self) -> Vec<FooterOption> {
-        vec![]
+        vec![FooterOption::new("q", "Quit")]
     }
 
-    fn get_header_lines(&self) -> usize {
-        1
-    }
-
-    fn get_footer_lines(&self) -> usize {
-        2
+    fn headline(&self) -> String {
+        format!("{}", style("All ToDos").bold())
     }
 }

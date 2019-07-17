@@ -1,11 +1,11 @@
 use crate::search::term::mainterm::MainTerm;
 use crate::search::term::TermDialog;
 use console::Term;
-use pageprinter::printer::itemprinter::ItemPrinter;
-
 use pageprinter::printer::textprinter::TextPrinter;
-use std::io::Result as IOResult;
+use pageprinter::printer::ItemPrinter;
 use term::SearchTerm;
+use std::io::Result as IOResult;
+
 pub mod pageprinter;
 pub mod term;
 

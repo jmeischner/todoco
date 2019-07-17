@@ -1,5 +1,5 @@
 use crate::helper;
-use crate::search::pageprinter::printer::itemprinter::ItemPrinter;
+use crate::search::pageprinter::printer::ItemPrinter;
 use crate::search::pageprinter::{Page, PagePrinter};
 use console::{style, Key, Term};
 use std::io::Result as IOResult;
@@ -16,13 +16,10 @@ where
     fn new(items: Vec<I>, printer: P, term: Term) -> Self;
     fn get_items(&self) -> &Vec<I>;
     fn get_printer(&self) -> &P;
-    fn header(&self) -> IOResult<()>;
     fn char_match(&self, c: char) -> IOResult<bool>;
     fn on_loop_end(&self) -> IOResult<()>;
     fn get_footer_options(&self) -> Vec<FooterOption>;
-    fn get_header_lines(&self) -> usize;
-    // Todo: This should come from TermDialog
-    fn get_footer_lines(&self) -> usize;
+    fn headline(&self) -> String;
 }
 
 pub struct FooterOption {
@@ -51,7 +48,7 @@ impl<I: Clone, P: ItemPrinter<I> + Clone, S: SearchTerm<I, P> + Clone> TermDialo
         TermDialog {
             items: PhantomData,
             printer: PhantomData,
-            term: term.clone(),
+            term: term,
             search: search,
         }
     }
@@ -69,7 +66,7 @@ impl<I: Clone, P: ItemPrinter<I> + Clone, S: SearchTerm<I, P> + Clone> TermDialo
         let mut page_printer = self.get_page_printer();
 
         // Print Start Page
-        self.search.header()?;
+        self.header()?;
         page_printer.print(Page::Current)?;
         self.footer()?;
 
@@ -86,13 +83,13 @@ impl<I: Clone, P: ItemPrinter<I> + Clone, S: SearchTerm<I, P> + Clone> TermDialo
                 }
                 Key::ArrowDown | Key::ArrowRight => {
                     self.clear()?;
-                    self.search.header()?;
+                    self.header()?;
                     page_printer.print(Page::Next)?;
                     self.footer()?;
                 }
                 Key::ArrowUp | Key::ArrowLeft => {
                     self.clear()?;
-                    self.search.header()?;
+                    self.header()?;
                     page_printer.print(Page::Previous)?;
                     self.footer()?;
                 }
@@ -104,10 +101,9 @@ impl<I: Clone, P: ItemPrinter<I> + Clone, S: SearchTerm<I, P> + Clone> TermDialo
     }
 
     fn get_term_height(&self) -> usize {
-        // Todo: Handle if term is not as wide as it should be to display full footer line
         helper::get_term_height(&self.term)
-            - self.search.get_header_lines()
-            - self.search.get_footer_lines()
+            - self.get_number_of_header_lines()
+            - self.get_number_of_footer_lines()
             - 1 // Line for read_key
     }
 
@@ -115,7 +111,7 @@ impl<I: Clone, P: ItemPrinter<I> + Clone, S: SearchTerm<I, P> + Clone> TermDialo
         let items = self.search.get_items();
         let height = self.get_term_height();
         let printer = self.search.get_printer();
-        // Todo: Refactor .clone()
+
         PagePrinter::new(items, height, printer)
     }
 
@@ -128,8 +124,6 @@ impl<I: Clone, P: ItemPrinter<I> + Clone, S: SearchTerm<I, P> + Clone> TermDialo
         ];
 
         options.extend(term_options);
-
-        options.extend(vec![FooterOption::new("q", "Quit")]);
 
         let mut footer = options.iter().rev().fold(String::new(), |text, option| {
             format!(
@@ -146,5 +140,22 @@ impl<I: Clone, P: ItemPrinter<I> + Clone, S: SearchTerm<I, P> + Clone> TermDialo
 
         helper::hbar(&self.term)?;
         self.term.write_line(&footer)
+    }
+
+    fn header(&self) -> IOResult<()> {
+        let line = self.search.headline();
+
+        helper::hbar(&self.term)?;
+        self.term.write_line(&line)?;
+        helper::hbar(&self.term)
+    }
+
+    // Todo: Handle if term is not as wide as it should be to display full footer line
+    fn get_number_of_header_lines(&self) -> usize {
+        3
+    }
+
+    fn get_number_of_footer_lines(&self) -> usize {
+        2
     }
 }

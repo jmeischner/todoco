@@ -1,4 +1,4 @@
-use super::itemprinter::ItemPrinter;
+use super::ItemPrinter;
 
 use console::Term;
 use std::io::Result as IOResult;

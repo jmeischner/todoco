@@ -1,4 +1,4 @@
-use super::itemprinter::ItemPrinter;
+use super::ItemPrinter;
 use crate::helper;
 use types::Todo;
 use std::io::Result as IOResult;

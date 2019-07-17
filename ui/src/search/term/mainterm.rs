@@ -1,11 +1,11 @@
-use crate::helper;
-use crate::search::pageprinter::printer::itemprinter::ItemPrinter;
+use super::FooterOption;
 use crate::search::pageprinter::printer::textprinter::TextPrinter;
 use crate::search::pageprinter::printer::todoprinter::TodoPrinter;
+use crate::search::pageprinter::printer::ItemPrinter;
 use crate::search::term::alltodosterm::AllTodosTerm;
 use crate::search::term::SearchTerm;
 use crate::search::term::TermDialog;
-use super::FooterOption;
+
 use console::{style, Term};
 use std::io::Result as IOResult;
 use todofilter;
@@ -35,11 +35,8 @@ impl SearchTerm<String, TextPrinter> for MainTerm {
         &self.printer
     }
 
-    fn header(&self) -> IOResult<()> {
-        helper::hbar(&self.term)?;
-        let welcome_line = format!("{}", style("What do you want to do?").bold());
-        self.term.write_line(&welcome_line)?;
-        helper::hbar(&self.term)
+    fn headline(&self) -> String {
+        format!("{}", style("What do you want to do?").bold())
     }
 
 
@@ -55,23 +52,16 @@ impl SearchTerm<String, TextPrinter> for MainTerm {
     }
 
     fn on_loop_end(&self) -> IOResult<()> {
-        Ok(())
+        self.term.clear_screen()
     }
 
     fn get_footer_options(&self) -> Vec<FooterOption> {
         vec![
             FooterOption::new("a", "List All"),
             FooterOption::new("k", "Search by Keyword"),
-            FooterOption::new("t", "List Tags")
+            FooterOption::new("t", "List Tags"),
+            FooterOption::new("q", "Quit"),
         ]
-    }
-
-    fn get_header_lines(&self) -> usize {
-        3
-    }
-
-    fn get_footer_lines(&self) -> usize {
-        2
     }
 }
 

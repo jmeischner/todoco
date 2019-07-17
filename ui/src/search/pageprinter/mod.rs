@@ -1,6 +1,6 @@
 use console::Term;
 use pager::Pager;
-use printer::itemprinter::ItemPrinter;
+use printer::ItemPrinter;
 use std::io::Result as IOResult;
 
 

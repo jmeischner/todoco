@@ -1,4 +1,4 @@
-use super::itemprinter::ItemPrinter;
+use super::ItemPrinter;
 use std::io::Result as IOResult;
 use console::Term;
 use std::marker::PhantomData;
