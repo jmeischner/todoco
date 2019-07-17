@@ -1,6 +1,6 @@
 use super::FooterOption;
 use crate::search;
-use crate::search::pageprinter::printer::todoprinter::TodoPrinter;
+use crate::search::pageprinter::printer::{ItemPrinter, todoprinter::TodoPrinter};
 use crate::search::term::SearchTerm;
 use console::{style, Term};
 use std::io::Result as IOResult;
@@ -14,11 +14,11 @@ pub struct AllTodosTerm {
 }
 
 impl SearchTerm<Todo, TodoPrinter> for AllTodosTerm {
-    fn new(items: Vec<Todo>, printer: TodoPrinter, term: Term) -> AllTodosTerm {
+    fn new(items: Vec<Todo>, term: Term) -> AllTodosTerm {
         AllTodosTerm {
             term: term,
             items: items,
-            printer: printer,
+            printer: TodoPrinter::new(),
         }
     }
 

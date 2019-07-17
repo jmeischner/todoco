@@ -24,7 +24,7 @@ pub trait SearchTerm<I: Clone, P: Clone>
 where
     P: ItemPrinter<I>,
 {
-    fn new(items: Vec<I>, printer: P, term: Term) -> Self;
+    fn new(items: Vec<I>, term: Term) -> Self;
     fn get_items(&self) -> &Vec<I>;
     fn get_printer(&self) -> &P;
     fn char_match(&self, c: char) -> IOResult<bool>;

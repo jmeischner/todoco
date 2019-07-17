@@ -1,7 +1,5 @@
 use super::FooterOption;
-use crate::search::pageprinter::printer::textprinter::TextPrinter;
-use crate::search::pageprinter::printer::todoprinter::TodoPrinter;
-use crate::search::pageprinter::printer::ItemPrinter;
+use crate::search::pageprinter::printer::{ItemPrinter, textprinter::TextPrinter};
 use crate::search::term::alltodosterm::AllTodosTerm;
 use crate::search::term::SearchTerm;
 use crate::search::term::TermDialog;
@@ -19,11 +17,11 @@ pub struct MainTerm {
 }
 
 impl SearchTerm<String, TextPrinter> for MainTerm {
-    fn new(items: Vec<String>, printer: TextPrinter, term: Term) -> MainTerm {
+    fn new(items: Vec<String>, term: Term) -> MainTerm {
         MainTerm {
             term: term,
             items: items,
-            printer: printer,
+            printer: TextPrinter::new(),
         }
     }
 
@@ -80,9 +78,8 @@ impl MainTerm {
         let (is_project, _config) = types_helper::get_config_and_project_info_from(&current_dir);
         // todo: handle @error
         let project = todofilter::get_project(is_project, &current_dir).unwrap();
-        let printer = TodoPrinter::new();
         let term = self.term.clone();
-        let all_todos_term = AllTodosTerm::new(project.todos, printer, term.clone());
+        let all_todos_term = AllTodosTerm::new(project.todos, term.clone());
         let dialog = TermDialog::new(term, all_todos_term);
         dialog.start()
     }

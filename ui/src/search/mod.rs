@@ -1,11 +1,10 @@
 use crate::search::term::mainterm::MainTerm;
 use crate::search::term::TermDialog;
+use crate::search::pageprinter::printer::textprinter::TextPrinter;
 use console::Term;
-use pageprinter::printer::textprinter::TextPrinter;
-use pageprinter::printer::ItemPrinter;
-use term::SearchTerm;
-use std::io::Result as IOResult;
 
+use std::io::Result as IOResult;
+use term::SearchTerm;
 pub mod pageprinter;
 pub mod term;
 
@@ -19,7 +18,6 @@ pub fn start() -> IOResult<()> {
 }
 
 fn init_welcome_dialog(lines: Vec<String>) -> TermDialog<String, TextPrinter, MainTerm> {
-    let printer = TextPrinter::new();
-    let main_term = MainTerm::new(lines, printer, Term::stdout());
+    let main_term = MainTerm::new(lines, Term::stdout());
     TermDialog::new(Term::stdout(), main_term)
 }
