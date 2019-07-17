@@ -1,5 +1,4 @@
 
-use log::debug;
 use std::cmp;
 /// Struct to handle paging of
 /// a vector of items

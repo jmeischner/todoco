@@ -5,6 +5,7 @@ use crate::search::pageprinter::printer::todoprinter::TodoPrinter;
 use crate::search::term::alltodosterm::AllTodosTerm;
 use crate::search::term::SearchTerm;
 use crate::search::term::TermDialog;
+use super::FooterOption;
 use console::{style, Term};
 use std::io::Result as IOResult;
 use todofilter;
@@ -12,30 +13,17 @@ use types::config::helper as types_helper;
 
 #[derive(Clone)]
 pub struct MainTerm {
-    term: Option<Term>,
+    term: Term,
     items: Vec<String>,
     printer: TextPrinter,
 }
 
 impl SearchTerm<String, TextPrinter> for MainTerm {
-    fn new(items: Vec<String>, printer: TextPrinter) -> MainTerm {
+    fn new(items: Vec<String>, printer: TextPrinter, term: Term) -> MainTerm {
         MainTerm {
-            term: None,
+            term: term,
             items: items,
             printer: printer,
-        }
-    }
-
-    fn set_term(mut self, term: Term) -> MainTerm {
-        self.term = Some(term);
-        self
-    }
-
-    fn get_term(&self) -> Term {
-        if let Some(term) = &self.term {
-            term.clone()
-        } else {
-            Term::stdout()
         }
     }
 
@@ -48,10 +36,10 @@ impl SearchTerm<String, TextPrinter> for MainTerm {
     }
 
     fn header(&self) -> IOResult<()> {
-        helper::hbar(&self.get_term())?;
+        helper::hbar(&self.term)?;
         let welcome_line = format!("{}", style("What do you want to do?").bold());
-        self.get_term().write_line(&welcome_line)?;
-        helper::hbar(&self.get_term())
+        self.term.write_line(&welcome_line)?;
+        helper::hbar(&self.term)
     }
 
 
@@ -70,18 +58,12 @@ impl SearchTerm<String, TextPrinter> for MainTerm {
         Ok(())
     }
 
-    fn footer(&self) -> IOResult<()> {
-        helper::hbar(&self.get_term())?;
-        let menu_line = format!(
-            "{}: Next Page | {}: Previous Page | {}: List All | {}: Search by Keyword | {}: List Tags | {}: Quit",
-            style("▶|▼").blue(),
-            style("◀|▲").blue(),
-            style("a").blue(),
-            style("k").blue(),
-            style("t").blue(),
-            style("q").blue(),
-        );
-        self.get_term().write_line(&menu_line)
+    fn get_footer_options(&self) -> Vec<FooterOption> {
+        vec![
+            FooterOption::new("a", "List All"),
+            FooterOption::new("k", "Search by Keyword"),
+            FooterOption::new("t", "List Tags")
+        ]
     }
 
     fn get_header_lines(&self) -> usize {
@@ -97,11 +79,11 @@ impl MainTerm {
     fn all_todos_dialog(&self) -> IOResult<()> {
         let current_dir = todofilter::build_current_dir_path();
         let (is_project, _config) = types_helper::get_config_and_project_info_from(&current_dir);
-        // todo: handle error @error
+        // todo: handle @error
         let project = todofilter::get_project(is_project, &current_dir).unwrap();
         let printer = TodoPrinter::new();
-        let all_todos_term = AllTodosTerm::new(project.todos, printer);
-        let term = self.get_term();
+        let term = self.term.clone();
+        let all_todos_term = AllTodosTerm::new(project.todos, printer, term.clone());
         let dialog = TermDialog::new(term, all_todos_term);
         dialog.start()
     }

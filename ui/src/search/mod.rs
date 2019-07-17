@@ -20,7 +20,6 @@ pub fn start() -> IOResult<()> {
 
 fn init_welcome_dialog(lines: Vec<String>) -> TermDialog<String, TextPrinter, MainTerm> {
     let printer = TextPrinter::new();
-    let main_term = MainTerm::new(lines, printer);
-    let term = Term::stdout();
-    TermDialog::new(term, main_term)
+    let main_term = MainTerm::new(lines, printer, Term::stdout());
+    TermDialog::new(Term::stdout(), main_term)
 }

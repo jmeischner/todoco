@@ -1,5 +1,4 @@
 use console::Term;
-use log::debug;
 use pager::Pager;
 use printer::itemprinter::ItemPrinter;
 use std::io::Result as IOResult;
@@ -8,6 +7,29 @@ use std::io::Result as IOResult;
 mod pager;
 pub mod printer;
 
+/// Enum to Identify which Page
+/// the PagePrinter should show
+/// 
+/// # Possible Values
+/// - Current
+/// - Next
+/// - Previous
+/// 
+pub enum Page {
+    Current,
+    Next,
+    Previous,
+}
+
+/// Struct which handles the 
+/// output of pages of items
+/// 
+/// # Properties
+/// `pager` - The Struct which returns the
+/// items of one page
+/// `printer` - The Printer which handles the
+/// logic of printing a list of the given item types
+/// `term` - Holds the output term
 #[derive(Clone)]
 pub struct PagePrinter<'a, I: Clone, P: Clone> {
     pager: Pager<'a, I>,
@@ -32,44 +54,21 @@ where
         }
     }
 
-    /// Print items of current page
-    pub fn print_start_page(&mut self) -> IOResult<()> {
-        let items = self.pager.current();
-        let items_count = items.len();
+    pub fn print(&mut self, page: Page) -> IOResult<()> {
+        let items = match page {
+            Page::Current => self.pager.current(),
+            Page::Next => self.pager.next(),
+            Page::Previous => self.pager.prev(),
+        };
+
+        let count = items.len();
 
         self.printer.print_items(&self.term, items)?;
-        self.print_missing_empty_lines(items_count)?;
-        Ok(())
-    }
-
-    /// Print items of next page
-    pub fn print_next(&mut self) -> IOResult<()> {
-        self.term.clear_last_lines(self.pager.page_height())?;
-        let items = self.pager.next();
-        let items_count = items.len();
-
-        self.printer.print_items(&self.term, items)?;
-        self.print_missing_empty_lines(items_count)?;
-        Ok(())
-    }
-
-    /// Print items of previous page
-    pub fn print_prev(&mut self) -> IOResult<()> {
-        self.term.clear_last_lines(self.pager.page_height())?;
-        let items = &self.pager.prev();
-        let items_count = items.len();
-
-        self.printer.print_items(&self.term, items)?;
-        self.print_missing_empty_lines(items_count)?;
+        self.print_missing_empty_lines(count)?;
         Ok(())
     }
 
     fn print_missing_empty_lines(&self, cur_lines: usize) -> IOResult<()> {
-        // debug!(
-        //     "height: {}, cur_lines: {}",
-        //     &self.pager.page_height(),
-        //     cur_lines
-        // );
         let missing_lines = &self.pager.page_height() - cur_lines;
         for _ in 0..missing_lines {
             self.term.write_line("")?;
