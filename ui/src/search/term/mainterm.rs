@@ -1,9 +1,9 @@
 use super::FooterOption;
-use crate::search::pageprinter::printer::{ItemPrinter, textprinter::TextPrinter};
-use crate::search::term::alltodosterm::AllTodosTerm;
+use crate::search;
+use crate::search::pageprinter::printer::{textprinter::TextPrinter, ItemPrinter};
 use crate::search::term::SearchTerm;
 use crate::search::term::TermDialog;
-
+use crate::search::term::{AllTodosTerm, KeywordSearchTerm};
 use console::{style, Emoji, Term};
 use std::io::Result as IOResult;
 use todofilter;
@@ -29,6 +29,10 @@ impl SearchTerm<String, TextPrinter> for MainTerm {
         &self.items
     }
 
+    fn set_on_quit(self, _: fn() -> IOResult<()>) -> MainTerm {
+        self
+    }
+
     fn get_printer(&self) -> &TextPrinter {
         &self.printer
     }
@@ -40,10 +44,13 @@ impl SearchTerm<String, TextPrinter> for MainTerm {
 
     fn char_match(&self, c: char) -> IOResult<bool> {
         match c {
-            'q' => Ok(true),
             'a' => {
                 self.all_todos_dialog()?;
-                return Ok(true);
+                Ok(true)
+            }
+            'k' => {
+                self.search_by_keyword()?;
+                Ok(true)
             }
             _ => Ok(false),
         }
@@ -67,7 +74,6 @@ impl SearchTerm<String, TextPrinter> for MainTerm {
             FooterOption::new("a", "List All"),
             FooterOption::new("k", "Search by Keyword"),
             FooterOption::new("t", "List Tags"),
-            FooterOption::new("q", "Quit"),
         ]
     }
 }
@@ -81,6 +87,19 @@ impl MainTerm {
         let term = self.term.clone();
         let all_todos_term = AllTodosTerm::new(project.todos, term.clone());
         let dialog = TermDialog::new(term, all_todos_term);
+        dialog.start()
+    }
+
+    fn search_by_keyword(&self) -> IOResult<()> {
+        let current_dir = todofilter::build_current_dir_path();
+        let (is_project, _config) = types_helper::get_config_and_project_info_from(&current_dir);
+        // todo: handle @error
+        let project = todofilter::get_project(is_project, &current_dir).unwrap();
+        let term = self.term.clone();
+        let keyword_search_term = KeywordSearchTerm::new(project.todos.clone(), term.clone())
+            .set_project(project)
+            .set_on_quit(search::start);
+        let dialog = TermDialog::new(term, keyword_search_term);
         dialog.start()
     }
 }

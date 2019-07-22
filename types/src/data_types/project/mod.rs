@@ -12,7 +12,7 @@ use log::error;
 
 pub mod updater;
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Project {
     pub name: String,
     pub todos: Vec<Todo>,

@@ -88,7 +88,7 @@ fn handle_list(matches: &ArgMatches) {
         }
 
         let keyword = matches.value_of("KEYWORD");
-        match todofilter::get_filtered_todos(keyword, current_dir) {
+        match todofilter::get_filtered_todos_by_path(keyword, current_dir) {
             Ok(matches) => ui::print_list_matches::print(matches),
             Err(e) => error!("{}", e),
         }

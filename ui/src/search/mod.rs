@@ -1,5 +1,4 @@
-use crate::search::term::mainterm::MainTerm;
-use crate::search::term::TermDialog;
+use crate::search::term::{MainTerm, TermDialog};
 use crate::search::pageprinter::printer::textprinter::TextPrinter;
 use console::Term;
 

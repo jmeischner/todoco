@@ -3,13 +3,20 @@ use log::warn;
 use std::path::{Path, PathBuf};
 use todoscanner;
 
-pub fn get_filtered_todos(
+pub fn get_filtered_todos_by_path(
     keyword: Option<&str>,
     path: PathBuf,
 ) -> Result<FilterMatch, &'static str> {
     let (is_project, _config) = helper::get_config_and_project_info_from(&path);
     let project = get_project(is_project, &path)?;
 
+    get_filtered_todos(keyword, project)
+}
+
+pub fn get_filtered_todos(
+    keyword: Option<&str>,
+    project: Project
+) -> Result<FilterMatch, &'static str> {
     if let Some(keyword) = keyword {
         Ok(get_matching_todos(keyword, &project))
     } else {
@@ -19,7 +26,6 @@ pub fn get_filtered_todos(
         }
     }
 }
-
 
 pub fn build_current_dir_path() -> PathBuf {
     let mut current_dir_path = PathBuf::new();

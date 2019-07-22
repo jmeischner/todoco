@@ -1,6 +1,6 @@
 use super::FooterOption;
 use crate::search;
-use crate::search::pageprinter::printer::{ItemPrinter, todoprinter::TodoPrinter};
+use crate::search::pageprinter::printer::{todoprinter::TodoPrinter, ItemPrinter};
 use crate::search::term::SearchTerm;
 use console::{style, Term};
 use std::io::Result as IOResult;
@@ -30,9 +30,12 @@ impl SearchTerm<Todo, TodoPrinter> for AllTodosTerm {
         &self.printer
     }
 
+    fn set_on_quit(self, _: fn() -> IOResult<()>) -> AllTodosTerm {
+        self
+    }
+
     fn char_match(&self, c: char) -> IOResult<bool> {
         match c {
-            'q' => Ok(true),
             _ => Ok(false),
         }
     }
@@ -42,7 +45,7 @@ impl SearchTerm<Todo, TodoPrinter> for AllTodosTerm {
     }
 
     fn get_footer_options(&self) -> Vec<FooterOption> {
-        vec![FooterOption::new("q", "Quit")]
+        vec![]
     }
 
     fn headline(&self) -> String {

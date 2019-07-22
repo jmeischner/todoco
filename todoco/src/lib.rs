@@ -29,5 +29,5 @@ pub fn init(config: Config, path: PathBuf) -> IOResult<()> {
 /// # Arguments
 /// * `keyword` - The keyword the todos should get filtered for
 pub fn list(keyword: Option<&str>, current_dir: PathBuf) -> Result<FilterMatch, &'static str> {
-    todofilter::get_filtered_todos(keyword, current_dir)
+    todofilter::get_filtered_todos_by_path(keyword, current_dir)
 }

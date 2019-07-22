@@ -7,7 +7,12 @@ use std::marker::PhantomData;
 
 
 pub mod alltodosterm;
+
+pub mod keywordsearchterm;
 pub mod mainterm;
+pub use alltodosterm::AllTodosTerm;
+pub use keywordsearchterm::KeywordSearchTerm;
+pub use mainterm::MainTerm;
 
 /// Trait for implementing specific term ui
 /// of the search cli verb
@@ -28,6 +33,7 @@ where
     fn get_items(&self) -> &Vec<I>;
     fn get_printer(&self) -> &P;
     fn char_match(&self, c: char) -> IOResult<bool>;
+    fn set_on_quit(self, f: fn() -> IOResult<()>) -> Self;
     fn on_quit(&self) -> IOResult<()>;
     fn get_footer_options(&self) -> Vec<FooterOption>;
     fn headline(&self) -> String;
@@ -114,6 +120,9 @@ impl<I: Clone, P: ItemPrinter<I> + Clone, S: SearchTerm<I, P> + Clone> TermDialo
                     page_printer.print(Page::Previous)?;
                     self.footer()?;
                 }
+                Key::Escape => {
+                    break;
+                }
                 _ => {}
             }
         }
@@ -144,7 +153,10 @@ impl<I: Clone, P: ItemPrinter<I> + Clone, S: SearchTerm<I, P> + Clone> TermDialo
             FooterOption::new("◀|▲", "Previous Page"),
         ];
 
+        let quit = vec![FooterOption::new("Esc", "Quit")];
+
         options.extend(term_options);
+        options.extend(quit);
 
         let mut footer = options.iter().rev().fold(String::new(), |text, option| {
             format!(
