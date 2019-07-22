@@ -25,7 +25,7 @@ pub struct KeywordSearchTerm {
     keyword: Option<String>,
     project: Option<Project>,
     match_type: MatchType,
-    quitter: Option<fn() -> IOResult<()>>,
+    quitter: Option<fn(term: Term) -> IOResult<()>>,
 }
 
 impl SearchTerm<Todo, TodoPrinter> for KeywordSearchTerm {
@@ -49,7 +49,7 @@ impl SearchTerm<Todo, TodoPrinter> for KeywordSearchTerm {
         &self.printer
     }
 
-    fn set_on_quit(mut self, f: fn() -> IOResult<()>) -> KeywordSearchTerm {
+    fn set_on_quit(mut self, f: fn(_: Term) -> IOResult<()>) -> KeywordSearchTerm {
         self.quitter = Some(f);
         self
     }
@@ -77,7 +77,7 @@ impl SearchTerm<Todo, TodoPrinter> for KeywordSearchTerm {
 
     fn on_quit(&self) -> IOResult<()> {
         if let Some(quitter) = self.quitter {
-            quitter()
+            quitter(self.term.clone())
         } else {
             Ok(())
         }
@@ -108,7 +108,7 @@ impl KeywordSearchTerm {
         self
     }
 
-    fn set_keyword(mut self, keyword: String) -> KeywordSearchTerm {
+    pub fn set_keyword(mut self, keyword: String) -> KeywordSearchTerm {
         self.keyword = Some(keyword);
         self
     }
@@ -143,35 +143,36 @@ impl KeywordSearchTerm {
 
     fn get_filtered_todos(&self, keyword: &str) -> KeywordSearchTerm {
         let term = self.term.clone();
-        let keyword_search_term: KeywordSearchTerm;
+
         let filter_key = if keyword.len() > 0 {
             Some(keyword)
         } else {
             None
         };
 
-        if let Ok(filtered_todos) = todofilter::get_filtered_todos(filter_key, self.get_project()) {
-            keyword_search_term = match filtered_todos {
-                FilterMatch::All(todos) => {
-                    KeywordSearchTerm::new(todos, term).set_match_type(MatchType::All)
-                }
-                FilterMatch::Files(todos) => {
-                    KeywordSearchTerm::new(todos, term).set_match_type(MatchType::Files)
-                }
-                FilterMatch::None => {
-                    KeywordSearchTerm::new(vec![], term).set_match_type(MatchType::None)
-                }
-                FilterMatch::Tags(todos) => {
-                    KeywordSearchTerm::new(todos, term).set_match_type(MatchType::Tags)
-                }
-                FilterMatch::Text(todos) => {
-                    KeywordSearchTerm::new(todos, term).set_match_type(MatchType::Text)
-                }
-            };
-        } else {
-            keyword_search_term = KeywordSearchTerm::new(vec![], term);
-        };
+        let filtered_todos = todofilter::get_filtered_todos(filter_key, self.get_project())
+            .unwrap_or(FilterMatch::None);
 
-        keyword_search_term
+        KeywordSearchTerm::new_from_filter_match(filtered_todos, term)
+    }
+
+    pub fn new_from_filter_match(filter: FilterMatch, term: Term) -> KeywordSearchTerm {
+        match filter {
+            FilterMatch::All(todos) => {
+                KeywordSearchTerm::new(todos, term).set_match_type(MatchType::All)
+            }
+            FilterMatch::Files(todos) => {
+                KeywordSearchTerm::new(todos, term).set_match_type(MatchType::Files)
+            }
+            FilterMatch::None => {
+                KeywordSearchTerm::new(vec![], term).set_match_type(MatchType::None)
+            }
+            FilterMatch::Tags(todos) => {
+                KeywordSearchTerm::new(todos, term).set_match_type(MatchType::Tags)
+            }
+            FilterMatch::Text(todos) => {
+                KeywordSearchTerm::new(todos, term).set_match_type(MatchType::Text)
+            }
+        }
     }
 }

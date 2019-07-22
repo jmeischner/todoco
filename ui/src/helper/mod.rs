@@ -1,4 +1,4 @@
-use console::{style, Term};
+use console::{Emoji, style, Term};
 use std::io::Result;
 
 pub fn hbar(term: &Term) -> Result<()> {
@@ -24,4 +24,12 @@ pub fn get_term_height(term: &Term) -> usize {
 
 pub fn tab(times: usize) -> String {
     "  ".repeat(times)
+}
+
+pub fn get_goodbye_message() -> String {
+    format!(
+        "Goodbye {} and Thank You {}",
+        Emoji("👋", ""),
+        Emoji("🙏", "")
+    )
 }

@@ -35,7 +35,7 @@ where
     fn get_items(&self) -> &Vec<I>;
     fn get_printer(&self) -> &P;
     fn char_match(&self, c: char) -> IOResult<bool>;
-    fn set_on_quit(self, f: fn() -> IOResult<()>) -> Self;
+    fn set_on_quit(self, f: fn(term: Term) -> IOResult<()>) -> Self;
     fn on_quit(&self) -> IOResult<()>;
     fn get_footer_options(&self) -> Vec<FooterOption>;
     fn headline(&self) -> String;

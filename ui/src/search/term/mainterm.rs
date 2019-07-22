@@ -1,10 +1,9 @@
 use super::FooterOption;
+use crate::helper;
 use crate::search;
 use crate::search::pageprinter::printer::{textprinter::TextPrinter, ItemPrinter};
-use crate::search::term::SearchTerm;
-use crate::search::term::TermDialog;
-use crate::search::term::{AllTagsTerm, AllTodosTerm, KeywordSearchTerm};
-use console::{style, Emoji, Term};
+use crate::search::term::{AllTagsTerm, AllTodosTerm, KeywordSearchTerm, SearchTerm, TermDialog};
+use console::{style, Term};
 use std::io::Result as IOResult;
 use todofilter;
 use types::config::helper as types_helper;
@@ -29,7 +28,7 @@ impl SearchTerm<String, TextPrinter> for MainTerm {
         &self.items
     }
 
-    fn set_on_quit(self, _: fn() -> IOResult<()>) -> MainTerm {
+    fn set_on_quit(self, _: fn(_: Term) -> IOResult<()>) -> MainTerm {
         self
     }
 
@@ -63,11 +62,7 @@ impl SearchTerm<String, TextPrinter> for MainTerm {
     fn on_quit(&self) -> IOResult<()> {
         self.term.clear_screen()?;
 
-        let goodbye_line = format!(
-            "Goodbye {} and Thank You {}",
-            Emoji("👋", ""),
-            Emoji("🙏", "")
-        );
+        let goodbye_line = helper::get_goodbye_message();
 
         self.term
             .write_line(&format!("{}", style(goodbye_line).bold()))
@@ -102,7 +97,7 @@ impl MainTerm {
         let term = self.term.clone();
         let keyword_search_term = KeywordSearchTerm::new(project.todos.clone(), term.clone())
             .set_project(project)
-            .set_on_quit(search::start);
+            .set_on_quit(|_| search::start());
         let dialog = TermDialog::new(term, keyword_search_term);
         dialog.start()
     }

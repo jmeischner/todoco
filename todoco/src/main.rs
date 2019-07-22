@@ -9,7 +9,7 @@ use export::format::taskpaper::TaskPaperBuilder;
 use todoco;
 use todofilter;
 
-use ui::search;
+use ui::{config_dialog, search};
 
 // Todo: Refactor status messages to ui module
 fn main() {
@@ -64,7 +64,7 @@ fn handle_scan(matches: &ArgMatches) {
 fn handle_init(matches: &ArgMatches) {
     if let Some(_matches) = matches.subcommand_matches("init") {
         if let Ok(cur_dir) = env::current_dir() {
-            let config = ui::dialog_config::ask_for_config().unwrap();
+            let config = config_dialog::ask_for_config().unwrap();
             if let Err(e) = todoco::init(config, cur_dir) {
                 error!("{}", e);
             } else {
@@ -88,8 +88,12 @@ fn handle_list(matches: &ArgMatches) {
         }
 
         let keyword = matches.value_of("KEYWORD");
-        match todofilter::get_filtered_todos_by_path(keyword, current_dir) {
-            Ok(matches) => ui::print_list_matches::print(matches),
+        // Todo: Use ref instead of cloning PathBuf
+        match todofilter::get_filtered_todos_by_path(keyword, current_dir.clone()) {
+            Ok(matches) => {
+                // Todo: Handle IOResult
+                search::list(keyword, matches, current_dir).unwrap();
+            }
             Err(e) => error!("{}", e),
         }
     }
