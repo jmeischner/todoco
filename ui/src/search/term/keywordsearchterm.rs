@@ -59,13 +59,13 @@ impl SearchTerm<Todo, TodoPrinter> for KeywordSearchTerm {
             _ => {
                 let mut keyword = self.get_keyword();
 
-                // Test for Backspace Character
-                if c == '\u{7f}' && keyword.len() > 0 {
-                    keyword.truncate(keyword.as_bytes().len() - 1);
-                } else {
-                    // if c.is_alphanumeric() {
-                    keyword = format!("{}{}", keyword, c);
-                    // }
+                if keyword.len() > 0 {
+                    // Test for Backspace Character
+                    if c == '\u{7f}' {
+                        keyword.truncate(keyword.as_bytes().len() - 1);
+                    } else {
+                        keyword = format!("{}{}", keyword, c);
+                    }
                 }
 
                 self.show_filtered_list(keyword)?;
@@ -94,7 +94,7 @@ impl SearchTerm<Todo, TodoPrinter> for KeywordSearchTerm {
             MatchType::Text => style("In Todo Description").cyan(),
             MatchType::Tags => style("By Tag Name").cyan(),
             MatchType::None => style("No Matching Todos Found").red(),
-            MatchType::Files => style("By Filename").cyan(),
+            MatchType::Files => style("By Match in Pathname").cyan(),
             MatchType::All => style("Match All Todos").green(),
         };
 

@@ -98,7 +98,7 @@ fn check_for_keyword_in_filenames<'a>(
     let matching_files: Vec<&SourceFile> = files
         .iter()
         .cloned()
-        .filter(|file| file.name.contains(keyword))
+        .filter(|file| format!("{}/{}", file.path, file.name).contains(keyword))
         .collect();
 
     match matching_files.len() {

@@ -1,3 +1,8 @@
 Dear Folks,
 
 in this interactive shell you could work with your '// Todo:' comments in your code.
+
+Following Options are available:
+    "a": Listing all *ToDos* in project
+    "k": Filtering *ToDos* by keywords, similiar to the `todoco list` option
+    "t": Listing all available tags
