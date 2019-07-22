@@ -7,12 +7,14 @@ use std::marker::PhantomData;
 
 
 pub mod alltodosterm;
-
+pub mod alltagsterm;
 pub mod keywordsearchterm;
 pub mod mainterm;
+
 pub use alltodosterm::AllTodosTerm;
 pub use keywordsearchterm::KeywordSearchTerm;
 pub use mainterm::MainTerm;
+pub use alltagsterm::AllTagsTerm;
 
 /// Trait for implementing specific term ui
 /// of the search cli verb
@@ -168,7 +170,7 @@ impl<I: Clone, P: ItemPrinter<I> + Clone, S: SearchTerm<I, P> + Clone> TermDialo
         });
 
         // Todo: find better method for cut of last "| "
-        let len = footer.len();
+        let len = footer.as_bytes().len();
         footer.truncate(len - 2);
 
         helper::hbar(&self.term)?;

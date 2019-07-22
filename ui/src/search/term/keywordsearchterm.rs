@@ -61,11 +61,11 @@ impl SearchTerm<Todo, TodoPrinter> for KeywordSearchTerm {
 
                 // Test for Backspace Character
                 if c == '\u{7f}' && keyword.len() > 0 {
-                    keyword.truncate(keyword.len() - 1);
+                    keyword.truncate(keyword.as_bytes().len() - 1);
                 } else {
-                    if c.is_alphanumeric() {
-                        keyword = format!("{}{}", keyword, c);
-                    }
+                    // if c.is_alphanumeric() {
+                    keyword = format!("{}{}", keyword, c);
+                    // }
                 }
 
                 self.show_filtered_list(keyword)?;

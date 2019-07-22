@@ -3,7 +3,7 @@ use crate::search;
 use crate::search::pageprinter::printer::{textprinter::TextPrinter, ItemPrinter};
 use crate::search::term::SearchTerm;
 use crate::search::term::TermDialog;
-use crate::search::term::{AllTodosTerm, KeywordSearchTerm};
+use crate::search::term::{AllTagsTerm, AllTodosTerm, KeywordSearchTerm};
 use console::{style, Emoji, Term};
 use std::io::Result as IOResult;
 use todofilter;
@@ -50,6 +50,10 @@ impl SearchTerm<String, TextPrinter> for MainTerm {
             }
             'k' => {
                 self.search_by_keyword()?;
+                Ok(true)
+            }
+            't' => {
+                self.all_tags_dialog()?;
                 Ok(true)
             }
             _ => Ok(false),
@@ -100,6 +104,23 @@ impl MainTerm {
             .set_project(project)
             .set_on_quit(search::start);
         let dialog = TermDialog::new(term, keyword_search_term);
+        dialog.start()
+    }
+
+    fn all_tags_dialog(&self) -> IOResult<()> {
+        let current_dir = todofilter::build_current_dir_path();
+        let (is_project, _config) = types_helper::get_config_and_project_info_from(&current_dir);
+        // todo: handle @error
+        let project = todofilter::get_project(is_project, &current_dir).unwrap();
+        let term = self.term.clone();
+        let tags = project
+            .get_tags()
+            .iter()
+            .cloned()
+            .map(|tag| tag.clone())
+            .collect();
+        let tags_term = AllTagsTerm::new(tags, term.clone());
+        let dialog = TermDialog::new(term, tags_term);
         dialog.start()
     }
 }
