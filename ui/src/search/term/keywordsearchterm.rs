@@ -59,11 +59,11 @@ impl SearchTerm<Todo, TodoPrinter> for KeywordSearchTerm {
             _ => {
                 let mut keyword = self.get_keyword();
 
-                if keyword.len() > 0 {
-                    // Test for Backspace Character
-                    if c == '\u{7f}' {
-                        keyword.truncate(keyword.as_bytes().len() - 1);
-                    } else {
+                // Test for Backspace Character
+                if c == '\u{7f}' && keyword.as_bytes().len() > 0 {
+                    keyword.truncate(keyword.as_bytes().len() - 1);
+                } else {
+                    if c != '\u{7f}' {
                         keyword = format!("{}{}", keyword, c);
                     }
                 }
