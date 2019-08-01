@@ -19,4 +19,8 @@ impl ItemPrinter<Tag> for TagPrinter {
 
         Ok(())
     }
+
+    fn get_item_height(&self) -> usize {
+        1
+    }
 }

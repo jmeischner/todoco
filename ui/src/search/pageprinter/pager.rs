@@ -10,16 +10,18 @@ use std::cmp;
 pub struct Pager<'a, I> {
     items: &'a Vec<I>,
     height: usize,
+    item_height: usize,
     current_page: usize,
 }
 
 impl<'a, I> Pager<'a, I> {
 
     /// Constructor
-    pub fn new(items: &'a Vec<I>, height: usize) -> Pager<I> {
+    pub fn new(items: &'a Vec<I>, height: usize, item_height: usize) -> Pager<I> {
         Pager {
             items: items,
             height: height,
+            item_height: item_height,
             current_page: 1,
         }
     }
@@ -74,7 +76,8 @@ impl<'a, I> Pager<'a, I> {
     /// Returns the number of list items
     /// per page
     fn get_items_per_page(&self) -> usize {
-        self.height
+        let result = self.height as f32 / self.item_height as f32;
+        result.floor() as usize
     }
 }
 
@@ -95,7 +98,7 @@ mod tests_pager {
         let todo_6 = Todo::new("Todo 6".to_string(), file.clone(), 69, vec![]);
         let todos = vec![todo_1, todo_2, todo_3, todo_4, todo_5, todo_6];
 
-        let mut pager = Pager::new(&todos, 4);
+        let mut pager = Pager::new(&todos, 4, 1);
 
         let page_0 = pager.current();
         assert_eq!(page_0, &todos[0..4]);
@@ -126,8 +129,8 @@ mod tests_pager {
         let todo_5 = Todo::new("Todo 5".to_string(), file.clone(), 56, vec![]);
         let todos = vec![todo_1, todo_2, todo_3, todo_4, todo_5];
 
-        let pager_1 = Pager::new(&todos, 3);
-        let pager_2 = Pager::new(&todos, 2);
+        let pager_1 = Pager::new(&todos, 3, 1);
+        let pager_2 = Pager::new(&todos, 2, 1);
 
         assert_eq!(pager_1.get_max_page_number(), 2);
         assert_eq!(pager_2.get_max_page_number(), 3);

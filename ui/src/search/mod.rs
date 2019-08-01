@@ -1,11 +1,11 @@
 
 use crate::helper;
 use crate::search::pageprinter::printer::textprinter::TextPrinter;
-use crate::search::term::{MainTerm, TermDialog, KeywordSearchTerm, SearchTerm};
+use crate::search::term::{KeywordSearchTerm, MainTerm, SearchTerm, TermDialog};
 use console::{style, Term};
 use std::io::Result as IOResult;
 use std::path::PathBuf;
-use types::{FilterMatch, config::helper as types_helper};
+use types::{config::helper as types_helper, FilterMatch};
 
 pub mod pageprinter;
 pub mod term;
@@ -37,8 +37,7 @@ pub fn list(keyword: Option<&str>, matches: FilterMatch, dir: PathBuf) -> IOResu
         .set_on_quit(|term| {
             term.clear_screen()?;
             let goodbye_line = helper::get_goodbye_message();
-            term
-                .write_line(&format!("{}", style(goodbye_line).bold()))
+            term.write_line(&format!("{}", style(goodbye_line).bold()))
         });
     let dialog = TermDialog::new(Term::stdout(), keyword_search_term);
     dialog.start()

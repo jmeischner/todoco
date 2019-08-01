@@ -22,4 +22,8 @@ impl ItemPrinter<String> for TextPrinter {
 
         Ok(())
     }
+
+    fn get_item_height(&self) -> usize {
+        1
+    }
 }

@@ -1,13 +1,14 @@
 use crate::{SourceFile, Tag, Todo};
 use appconfig::AppConfig;
 use itertools::Itertools;
-use serde::{Deserialize, Serialize};
+use log::error;
 use serde_json;
+use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::fs::File;
 use std::io::{BufReader, Read};
 use std::path::Path;
-use log::error;
+
 
 
 pub mod updater;
@@ -64,6 +65,14 @@ impl Project {
 
     pub fn get_active_todos(&self) -> Vec<&Todo> {
         self.todos.iter().filter(|todo| todo.is_active).collect()
+    }
+
+    pub fn get_active_todos_cloned(&self) -> Vec<Todo> {
+        self.todos
+            .iter()
+            .cloned()
+            .filter(|todo| !todo.is_active)
+            .collect()
     }
 
     pub fn get_inactive_todos(&self) -> Vec<Todo> {

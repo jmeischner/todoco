@@ -133,10 +133,17 @@ impl<I: Clone, P: ItemPrinter<I> + Clone, S: SearchTerm<I, P> + Clone> TermDialo
     }
 
     fn get_term_height(&self) -> usize {
-        helper::get_term_height(&self.term)
-            - self.get_number_of_header_lines()
-            - self.get_number_of_footer_lines()
-            - 1 // Line for read_key
+        let static_lines = self.get_number_of_header_lines()
+            + self.get_number_of_footer_lines()
+            + 1; // Line for read_key
+
+        let term_height = helper::get_term_height(&self.term);
+
+        if static_lines >= term_height {
+            return static_lines + 2;
+        }
+
+        term_height - static_lines
     }
 
     fn get_page_printer(&self) -> PagePrinter<I, P> {

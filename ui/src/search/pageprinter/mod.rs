@@ -9,21 +9,21 @@ pub mod printer;
 
 /// Enum to Identify which Page
 /// the PagePrinter should show
-/// 
+///
 /// # Possible Values
 /// - Current
 /// - Next
 /// - Previous
-/// 
+///
 pub enum Page {
     Current,
     Next,
     Previous,
 }
 
-/// Struct which handles the 
+/// Struct which handles the
 /// output of pages of items
-/// 
+///
 /// # Properties
 /// `pager` - The Struct which returns the
 /// items of one page
@@ -44,8 +44,8 @@ where
 {
     /// Constructur
     pub fn new(items: &'a Vec<I>, height: usize, printer: &'a P) -> PagePrinter<'a, I, P> {
-
-        let pager = Pager::new(items, height);
+        let item_height = printer.get_item_height();
+        let pager = Pager::new(items, height, item_height);
 
         PagePrinter {
             pager: pager,
@@ -69,7 +69,7 @@ where
     }
 
     fn print_missing_empty_lines(&self, cur_lines: usize) -> IOResult<()> {
-        let missing_lines = &self.pager.page_height() - cur_lines;
+        let missing_lines = &self.pager.page_height() - cur_lines * self.printer.get_item_height();
         for _ in 0..missing_lines {
             self.term.write_line("")?;
         }

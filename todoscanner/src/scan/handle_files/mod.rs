@@ -41,7 +41,7 @@ fn build_progress_bar(max: u64) -> ProgressBar {
     let bar = ProgressBar::new(max);
     bar.set_style(
         ProgressStyle::default_bar()
-            .template("[{elapsed:.cyan/blue}] |{bar:40.cyan/blue}| {pos:>7.cyan/blue} of {len:7.cyan/blue}")
+            .template("[{elapsed:.cyan/blue}] |{wide_bar:.cyan/blue}| {pos:>7.cyan/blue} of {len:7.cyan/blue}")
             .progress_chars("=>-"),
     );
 

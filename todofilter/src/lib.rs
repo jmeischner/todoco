@@ -1,7 +1,8 @@
-use types::{config::helper, FilterMatch, Project, SourceFile, Tag, Todo};
+
 use log::warn;
 use std::path::{Path, PathBuf};
 use todoscanner;
+use types::{config::helper, FilterMatch, Project, SourceFile, Tag, Todo};
 
 pub fn get_filtered_todos_by_path(
     keyword: Option<&str>,
@@ -15,7 +16,7 @@ pub fn get_filtered_todos_by_path(
 
 pub fn get_filtered_todos(
     keyword: Option<&str>,
-    project: Project
+    project: Project,
 ) -> Result<FilterMatch, &'static str> {
     if let Some(keyword) = keyword {
         Ok(get_matching_todos(keyword, &project))
@@ -47,6 +48,7 @@ pub fn get_project(is_project: bool, path: &Path) -> Result<Project, &'static st
     }
 }
 
+// Todo: Get all matches case insensitiv
 fn get_matching_todos<'a>(keyword: &'a str, project: &Project) -> FilterMatch {
     if let Some(matching_tags) = check_for_keyword_in_tags(keyword, project) {
         let todos = matching_tags
