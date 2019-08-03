@@ -8,11 +8,12 @@ use std::marker::PhantomData;
 
 pub mod alltodosterm;
 pub mod alltagsterm;
-pub mod keywordsearchterm;
+pub mod keyword;
 pub mod mainterm;
 
 pub use alltodosterm::AllTodosTerm;
-pub use keywordsearchterm::KeywordSearchTerm;
+pub use keyword::searchterm::KeywordSearchTerm;
+pub use keyword::controlterm::KeywordControlTerm;
 pub use mainterm::MainTerm;
 pub use alltagsterm::AllTagsTerm;
 
@@ -34,8 +35,9 @@ where
     fn new(items: Vec<I>, term: Term) -> Self;
     fn get_items(&self) -> &Vec<I>;
     fn get_printer(&self) -> &P;
+    fn get_term(&self) -> &Term;
     fn char_match(&self, c: char) -> IOResult<bool>;
-    fn set_on_quit(self, f: fn(term: Term) -> IOResult<()>) -> Self;
+    fn set_on_quit(self, f: fn(current: Self) -> IOResult<()>) -> Self;
     fn on_quit(&self) -> IOResult<()>;
     fn get_footer_options(&self) -> Vec<FooterOption>;
     fn headline(&self) -> String;

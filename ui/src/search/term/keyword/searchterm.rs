@@ -1,4 +1,5 @@
-use super::FooterOption;
+use super::super::FooterOption;
+use super::MatchType;
 use crate::search::pageprinter::printer::{todoprinter::TodoPrinter, ItemPrinter};
 use crate::search::term::SearchTerm;
 use crate::search::term::TermDialog;
@@ -8,14 +9,6 @@ use std::io::Result as IOResult;
 use todofilter;
 use types::{FilterMatch, Project, Todo};
 
-#[derive(Clone)]
-enum MatchType {
-    All,
-    Tags,
-    Files,
-    Text,
-    None,
-}
 
 #[derive(Clone)]
 pub struct KeywordSearchTerm {
@@ -25,7 +18,7 @@ pub struct KeywordSearchTerm {
     keyword: Option<String>,
     project: Option<Project>,
     match_type: MatchType,
-    quitter: Option<fn(term: Term) -> IOResult<()>>,
+    quitter: Option<fn(me: Self) -> IOResult<()>>,
 }
 
 impl SearchTerm<Todo, TodoPrinter> for KeywordSearchTerm {
@@ -49,7 +42,11 @@ impl SearchTerm<Todo, TodoPrinter> for KeywordSearchTerm {
         &self.printer
     }
 
-    fn set_on_quit(mut self, f: fn(_: Term) -> IOResult<()>) -> KeywordSearchTerm {
+    fn get_term(&self) -> &Term {
+        &self.term
+    }
+
+    fn set_on_quit(mut self, f: fn(_: Self) -> IOResult<()>) -> KeywordSearchTerm {
         self.quitter = Some(f);
         self
     }
@@ -77,7 +74,7 @@ impl SearchTerm<Todo, TodoPrinter> for KeywordSearchTerm {
 
     fn on_quit(&self) -> IOResult<()> {
         if let Some(quitter) = self.quitter {
-            quitter(self.term.clone())
+            quitter(self.clone())
         } else {
             Ok(())
         }
@@ -118,7 +115,7 @@ impl KeywordSearchTerm {
         self
     }
 
-    fn get_project(&self) -> Project {
+    pub fn get_project(&self) -> Project {
         if let Some(project) = &self.project {
             return project.clone();
         } else {
@@ -127,7 +124,7 @@ impl KeywordSearchTerm {
         }
     }
 
-    fn get_keyword(&self) -> String {
+    pub fn get_keyword(&self) -> String {
         self.keyword.clone().unwrap_or(String::new())
     }
 
@@ -141,7 +138,7 @@ impl KeywordSearchTerm {
         dialog.start()
     }
 
-    fn get_filtered_todos(&self, keyword: &str) -> KeywordSearchTerm {
+    pub fn get_filtered_todos(&self, keyword: &str) -> KeywordSearchTerm {
         let term = self.term.clone();
 
         let filter_key = if keyword.len() > 0 {

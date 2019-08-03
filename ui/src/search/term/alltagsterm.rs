@@ -30,7 +30,11 @@ impl SearchTerm<Tag, TagPrinter> for AllTagsTerm {
         &self.printer
     }
 
-    fn set_on_quit(self, _: fn(term: Term) -> IOResult<()>) -> AllTagsTerm {
+    fn get_term(&self) -> &Term {
+        &self.term
+    }
+
+    fn set_on_quit(self, _: fn(_: Self) -> IOResult<()>) -> AllTagsTerm {
         self
     }
 

@@ -2,7 +2,7 @@ use super::FooterOption;
 use crate::helper;
 use crate::search;
 use crate::search::pageprinter::printer::{textprinter::TextPrinter, ItemPrinter};
-use crate::search::term::{AllTagsTerm, AllTodosTerm, KeywordSearchTerm, SearchTerm, TermDialog};
+use crate::search::term::{AllTagsTerm, AllTodosTerm, KeywordControlTerm, SearchTerm, TermDialog};
 use console::{style, Term};
 use std::io::Result as IOResult;
 use todofilter;
@@ -28,7 +28,11 @@ impl SearchTerm<String, TextPrinter> for MainTerm {
         &self.items
     }
 
-    fn set_on_quit(self, _: fn(_: Term) -> IOResult<()>) -> MainTerm {
+    fn get_term(&self) -> &Term {
+        &self.term
+    }
+
+    fn set_on_quit(self, _: fn(_: Self) -> IOResult<()>) -> MainTerm {
         self
     }
 
@@ -94,11 +98,10 @@ impl MainTerm {
         let (is_project, _config) = types_helper::get_config_and_project_info_from(&current_dir);
         // todo: handle @error
         let project = todofilter::get_project(is_project, &current_dir).unwrap();
-        let term = self.term.clone();
-        let keyword_search_term = KeywordSearchTerm::new(project.todos.clone(), term.clone())
+        let keyword_control_term = KeywordControlTerm::new(project.todos.clone(), self.term.clone())
             .set_project(project)
             .set_on_quit(|_| search::start());
-        let dialog = TermDialog::new(term, keyword_search_term);
+        let dialog = TermDialog::new(self.term.clone(), keyword_control_term);
         dialog.start()
     }
 

@@ -34,10 +34,10 @@ pub fn list(keyword: Option<&str>, matches: FilterMatch, dir: PathBuf) -> IOResu
     let keyword_search_term = KeywordSearchTerm::new_from_filter_match(matches, Term::stdout())
         .set_project(project)
         .set_keyword(keyword.unwrap_or("").to_string())
-        .set_on_quit(|term| {
-            term.clear_screen()?;
+        .set_on_quit(|me| {
+            me.get_term().clear_screen()?;
             let goodbye_line = helper::get_goodbye_message();
-            term.write_line(&format!("{}", style(goodbye_line).bold()))
+            me.get_term().write_line(&format!("{}", style(goodbye_line).bold()))
         });
     let dialog = TermDialog::new(Term::stdout(), keyword_search_term);
     dialog.start()

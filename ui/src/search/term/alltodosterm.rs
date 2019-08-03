@@ -30,7 +30,11 @@ impl SearchTerm<Todo, TodoPrinter> for AllTodosTerm {
         &self.printer
     }
 
-    fn set_on_quit(self, _: fn(_: Term) -> IOResult<()>) -> AllTodosTerm {
+    fn get_term(&self) -> &Term {
+        &self.term
+    }
+
+    fn set_on_quit(self, _: fn(_: Self) -> IOResult<()>) -> AllTodosTerm {
         self
     }
 
