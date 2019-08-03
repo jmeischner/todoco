@@ -2,13 +2,13 @@ use crate::{SourceFile, Tag, Todo};
 use appconfig::AppConfig;
 use itertools::Itertools;
 use log::error;
-use serde_json;
+
 use serde::{Deserialize, Serialize};
+use serde_json;
 use std::collections::HashMap;
 use std::fs::File;
 use std::io::{BufReader, Read};
 use std::path::Path;
-
 
 
 pub mod updater;
@@ -165,13 +165,15 @@ mod tests_mod {
             "todoco".to_string(),
             vec![Todo::new(
                 "Use dialoguer Theme".to_string(),
-                SourceFile::new(
-                    "dialog_config.rs".to_string(),
-                    "./ui/src/dialog_config.rs".to_string(),
-                ),
+                SourceFile::new("dialog_config.rs".to_string(), "./ui/src".to_string()),
                 6,
                 vec![],
-            )],
+            ), Todo::new(
+                "Old Todo".to_string(),
+                SourceFile::new("mod.rs".to_string(), "./ui/src".to_string()),
+                6,
+                vec![],
+            ).set_inactive().clone()],
         );
 
         assert_eq!(expected_project.name, project.name);

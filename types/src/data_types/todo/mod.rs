@@ -41,8 +41,9 @@ impl Todo {
         self.text == other.text && self.file == other.file && self.line == other.line
     }
 
-    pub fn set_inactive(&mut self) {
+    pub fn set_inactive(&mut self) -> &mut Self {
         self.is_active = false;
+        self
     }
 
     pub fn match_in(&self, others: &Vec<Todo>) -> Option<Todo> {

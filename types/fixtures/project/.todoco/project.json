@@ -6,11 +6,22 @@
       "text": "Use dialoguer Theme",
       "file": {
         "name": "dialog_config.rs",
-        "path": "./ui/src/dialog_config.rs"
+        "path": "./ui/src"
       },
       "line": 6,
       "tags": [],
       "is_active": true
+    },
+    {
+      "id": "71e30879-fedc-4b52-a69d-ecc19b6e0999",
+      "text": "Old Todo",
+      "file": {
+        "name": "mod.rs",
+        "path": "./ui/src"
+      },
+      "line": 6,
+      "tags": [],
+      "is_active": false
     }
   ]
 }
