@@ -19,6 +19,7 @@ impl TodoPrinter {
             todo_text.push_str(&tags_text);
         }
 
+        // Todo: emphasize todo better in ui
         term.write_line(&todo_text)?;
         term.write_line(&format!(
             "{}{} {}:{}",
