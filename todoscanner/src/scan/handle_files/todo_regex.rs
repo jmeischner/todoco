@@ -27,17 +27,17 @@ impl TodoRegexer {
         self.has_todo.is_match(line)
     }
 
-    pub fn extract_text(&self, line: &str) -> Option<String> {
+    pub fn extract_text<'a>(&self, line: &'a str) -> Option<&'a str> {
         if let Some(cap) = &self.todo_pattern.captures(&line) {
             if let Some(text) = cap.name("todo") {
-                return Some(String::from(text.as_str().trim()));
+                return Some(text.as_str().trim());
             }
         }
 
         None
     }
 
-    pub fn extract_tags_from_text(&self, todo: String) -> (String, Vec<Tag>) {
+    pub fn extract_tags_from_text<'a>(&self, todo: &'a str) -> (&'a str, Vec<Tag>) {
         let mut tags: Vec<Tag> = vec![];
         let mut todo = todo;
 
@@ -57,23 +57,23 @@ impl TodoRegexer {
         self.has_tag.is_match(todo)
     }
 
-    fn get_tag(&self, todo: &str) -> (String, Option<Tag>) {
+    fn get_tag<'a>(&self, todo: &'a str) -> (&'a str, Option<Tag>) {
         if self.contains_tag(&todo) {
             if let Some(caps) = self.tag_pattern.captures(todo) {
                 if let Some(text) = caps.name("text") {
                     if let Some(tag) = caps.name("tag") {
                         if let Some(value) = caps.name("value") {
                             return (
-                                String::from(text.as_str().trim_end()),
+                                text.as_str().trim_end(),
                                 Some(Tag::new(
-                                    String::from(tag.as_str()),
+                                    tag.as_str(),
                                     Some(String::from(value.as_str())),
                                 )),
                             );
                         } else {
                             return (
-                                String::from(text.as_str().trim_end()),
-                                Some(Tag::new(String::from(tag.as_str()), None)),
+                                text.as_str().trim_end(),
+                                Some(Tag::new(tag.as_str(), None)),
                             );
                         }
                     }
@@ -81,7 +81,7 @@ impl TodoRegexer {
             };
         };
 
-        (String::from(todo), None)
+        (todo, None)
     }
 }
 
@@ -91,7 +91,7 @@ mod tests_todo_regexer {
     use super::TodoRegexer;
     use types::Tag;
 
-    fn build_todo_and_tag(text: &str) -> (String, Option<Tag>) {
+    fn build_todo_and_tag(text: &str) -> (&str, Option<Tag>) {
         let tr = TodoRegexer::new();
         tr.get_tag(text)
     }
@@ -173,17 +173,17 @@ mod tests_todo_regexer {
     #[test]
     fn get_multiple_tags_from_text() {
         let tr = TodoRegexer::new();
-        let todo = String::from("blabla @bli(blo) @blubb(blibb)");
+        let todo = "blabla @bli(blo) @blubb(blibb)";
         let (text, tags) = tr.extract_tags_from_text(todo);
-        assert_eq!(text, String::from("blabla"));
+        assert_eq!(text, "blabla");
         assert_eq!(tags.len(), 2);
         assert_eq!(
             tags[0],
-            Tag::new(String::from("blubb"), Some(String::from("blibb")))
+            Tag::new("blubb", Some(String::from("blibb")))
         );
         assert_eq!(
             tags[1],
-            Tag::new(String::from("bli"), Some(String::from("blo")))
+            Tag::new("bli", Some(String::from("blo")))
         );
     }
 

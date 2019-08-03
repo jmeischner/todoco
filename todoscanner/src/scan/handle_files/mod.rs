@@ -85,8 +85,8 @@ fn build_file_from_path(paths: Walk) -> Vec<SourceFile> {
                     if let (Some(name), Some(full_path)) = (path.file_name(), path.to_str()) {
                         if let Some(filename) = name.to_str() {
                             Some(SourceFile::new(
-                                String::from(filename),
-                                String::from(full_path),
+                                filename,
+                                full_path,
                             ))
                         } else {
                             // Todo: handle Result appropriatly
@@ -175,14 +175,14 @@ mod tests {
     #[test]
     fn extract_todo_from_test_file() {
         let test_file = SourceFile::new(
-            String::from("file1.txt"),
-            String::from("fixtures/mod_scan/file1.txt"),
+            "file1.txt",
+            "fixtures/mod_scan/file1.txt",
         );
 
-        let expected_tag = Tag::new(String::from("bla"), Some(String::from("bli")));
-        let expected_todo1 = Todo::new(String::from("Test"), test_file.clone(), 1, vec![]);
+        let expected_tag = Tag::new("bla", Some(String::from("bli")));
+        let expected_todo1 = Todo::new("Test", test_file.clone(), 1, vec![]);
         let expected_todo2 = Todo::new(
-            String::from("Test"),
+            "Test",
             test_file.clone(),
             2,
             vec![expected_tag],

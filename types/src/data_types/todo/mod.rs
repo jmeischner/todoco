@@ -1,3 +1,4 @@
+use super::meta::Meta;
 use super::sourcefile::SourceFile;
 use super::tag::Tag;
 use log::debug;
@@ -13,22 +14,22 @@ const EQUALITY_THRESHOLD: f64 = 0.90;
 #[derive(Serialize, Deserialize, Debug, Clone, Eq)]
 pub struct Todo {
     id: Uuid,
-    pub is_active: bool,
     pub text: String,
     pub file: SourceFile,
     pub line: usize,
     pub tags: Vec<Tag>, // Todo: Save next few lines for preview
+    pub meta: Meta
 }
 
 impl Todo {
-    pub fn new(text: String, file: SourceFile, line: usize, tags: Vec<Tag>) -> Todo {
+    pub fn new(text: &str, file: SourceFile, line: usize, tags: Vec<Tag>) -> Todo {
         Todo {
             id: Uuid::new_v4(),
-            is_active: true,
-            text: text,
+            text: text.to_string(),
             file: file,
             line: line,
             tags: tags,
+            meta: Meta::new()
         }
     }
 
@@ -41,9 +42,8 @@ impl Todo {
         self.text == other.text && self.file == other.file && self.line == other.line
     }
 
-    pub fn set_inactive(&mut self) -> &mut Self {
-        self.is_active = false;
-        self
+    pub fn set_inactive(&mut self) {
+        self.meta.set_is_active(false);
     }
 
     pub fn match_in(&self, others: &Vec<Todo>) -> Option<Todo> {
@@ -84,7 +84,7 @@ impl Todo {
     pub fn update_with(&self, other: &Todo) -> Todo {
         let mut result = other.clone();
         result.id = self.id;
-
+        result.meta.set_created_at(self.meta.get_created_at());
         result
     }
 
@@ -115,17 +115,17 @@ mod tests_todo {
     #[test]
     fn match_two_nearly_similiar_todos() {
         let todo1 = Todo::new(
-            "My Test Todo".to_string(),
-            SourceFile::new("here.txt".to_string(), "please/look".to_string()),
+            "My Test Todo",
+            SourceFile::new("here.txt", "please/look"),
             4,
-            vec![Tag::new("hey".to_string(), None)],
+            vec![Tag::new("hey", None)],
         );
 
         let todo2 = Todo::new(
-            "My second Test Todo".to_string(),
-            SourceFile::new("here.txt".to_string(), "please/look".to_string()),
+            "My second Test Todo",
+            SourceFile::new("here.txt", "please/look"),
             4,
-            vec![Tag::new("hey".to_string(), None)],
+            vec![Tag::new("hey", None)],
         );
 
         assert!(todo1.get_string_metric(&todo2) > EQUALITY_THRESHOLD);
@@ -134,17 +134,17 @@ mod tests_todo {
     #[test]
     fn not_match_two_not_so_similiar_todos() {
         let todo1 = Todo::new(
-            "You have to do this".to_string(),
-            SourceFile::new("here.txt".to_string(), "please/look".to_string()),
+            "You have to do this",
+            SourceFile::new("here.txt", "please/look"),
             4,
-            vec![Tag::new("hey".to_string(), None)],
+            vec![Tag::new("hey", None)],
         );
 
         let todo2 = Todo::new(
-            "Just Do".to_string(),
-            SourceFile::new("here.txt".to_string(), "please/look".to_string()),
+            "Just Do",
+            SourceFile::new("here.txt", "please/look"),
             4,
-            vec![Tag::new("hey".to_string(), None)],
+            vec![Tag::new("hey", None)],
         );
 
         assert!(todo1.get_string_metric(&todo2) < EQUALITY_THRESHOLD);
@@ -153,20 +153,20 @@ mod tests_todo {
     #[test]
     fn not_match_two_similar_todos_in_different_files() {
         let todo1 = Todo::new(
-            "My Test Todo".to_string(),
+            "My Test Todo",
             SourceFile::new(
-                "another file.txt".to_string(),
-                "please/drink/water".to_string(),
+                "another file.txt",
+                "please/drink/water",
             ),
             4,
-            vec![Tag::new("hey".to_string(), None)],
+            vec![Tag::new("hey", None)],
         );
 
         let todo2 = Todo::new(
-            "My Test Todo".to_string(),
-            SourceFile::new("here.txt".to_string(), "please/look".to_string()),
+            "My Test Todo",
+            SourceFile::new("here.txt", "please/look"),
             4,
-            vec![Tag::new("hey".to_string(), None)],
+            vec![Tag::new("hey", None)],
         );
 
         assert!(todo1.get_string_metric(&todo2) < EQUALITY_THRESHOLD);
@@ -175,17 +175,17 @@ mod tests_todo {
     #[test]
     fn match_two_nearly_similiar_todos_in_renamed_files() {
         let todo1 = Todo::new(
-            "My Test Todo".to_string(),
-            SourceFile::new("here.txt".to_string(), "please/look".to_string()),
+            "My Test Todo",
+            SourceFile::new("here.txt", "please/look"),
             4,
-            vec![Tag::new("hey".to_string(), None)],
+            vec![Tag::new("hey", None)],
         );
 
         let todo2 = Todo::new(
-            "My Test Todo".to_string(),
-            SourceFile::new("away.txt".to_string(), "please/look".to_string()),
+            "My Test Todo",
+            SourceFile::new("away.txt", "please/look"),
             4,
-            vec![Tag::new("hey".to_string(), None)],
+            vec![Tag::new("hey", None)],
         );
 
         assert!(todo1.get_string_metric(&todo2) > EQUALITY_THRESHOLD);

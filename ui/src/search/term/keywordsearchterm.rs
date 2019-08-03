@@ -123,7 +123,7 @@ impl KeywordSearchTerm {
             return project.clone();
         } else {
             // Todo: Should this be the solution?
-            Project::new("No Todos Found".to_string(), vec![])
+            Project::new("No Todos Found", vec![])
         }
     }
 

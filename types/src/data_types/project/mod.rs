@@ -17,16 +17,46 @@ pub mod updater;
 pub struct Project {
     pub name: String,
     pub todos: Vec<Todo>,
+    archive: Option<Vec<Todo>>,
 }
 
+/// Constructor, Getter and Setter
 impl Project {
-    pub fn new(name: String, todos: Vec<Todo>) -> Project {
+    pub fn new(name: &str, todos: Vec<Todo>) -> Project {
         Project {
-            name: name,
+            name: name.to_string(),
             todos: todos,
+            archive: None,
         }
     }
 
+    pub fn set_archive(&mut self, archive: Vec<Todo>) {
+        self.archive = Some(archive);
+    }
+
+    pub fn append_archive(&mut self, newly_archived: &mut Vec<Todo>) {
+        if let Some(ref mut archive) = self.archive {
+            archive.append(newly_archived);
+        } else {
+            self.set_archive(newly_archived.clone());
+        }
+    }
+
+    pub fn get_todos(&self) -> &Vec<Todo> {
+        &self.todos
+    }
+
+    pub fn get_archive(&self) -> Vec<Todo> {
+        if let Some(archive) = &self.archive {
+            archive.clone()
+        } else {
+            vec![]
+        }
+    }
+}
+
+/// Other Functions for Project
+impl Project {
     pub fn from_dir(path: &Path) -> Option<Project> {
         let config = AppConfig::get();
         let mut path = config.get_project_dir_path(path.to_path_buf());
@@ -61,26 +91,6 @@ impl Project {
         }
 
         return Some(map);
-    }
-
-    pub fn get_active_todos(&self) -> Vec<&Todo> {
-        self.todos.iter().filter(|todo| todo.is_active).collect()
-    }
-
-    pub fn get_active_todos_cloned(&self) -> Vec<Todo> {
-        self.todos
-            .iter()
-            .cloned()
-            .filter(|todo| !todo.is_active)
-            .collect()
-    }
-
-    pub fn get_inactive_todos(&self) -> Vec<Todo> {
-        self.todos
-            .iter()
-            .cloned()
-            .filter(|todo| !todo.is_active)
-            .collect()
     }
 
     pub fn get_tags(&self) -> Vec<&Tag> {
@@ -130,15 +140,15 @@ mod tests_mod {
 
     #[test]
     fn get_todos_grouped_by_files() {
-        let file1 = SourceFile::new(String::from("File 1.txt"), String::from("Here/it/is"));
-        let file2 = SourceFile::new(String::from("File 2.txt"), String::from("Here/it/is"));
-        let td1 = Todo::new(String::from("Todo 1"), file1.clone(), 1, vec![]);
-        let td2 = Todo::new(String::from("Todo 2"), file1.clone(), 1, vec![]);
-        let td3 = Todo::new(String::from("Todo 3"), file1.clone(), 1, vec![]);
-        let td4 = Todo::new(String::from("Todo 4"), file2.clone(), 1, vec![]);
+        let file1 = SourceFile::new("File 1.txt", "Here/it/is");
+        let file2 = SourceFile::new("File 2.txt", "Here/it/is");
+        let td1 = Todo::new("Todo 1", file1.clone(), 1, vec![]);
+        let td2 = Todo::new("Todo 2", file1.clone(), 1, vec![]);
+        let td3 = Todo::new("Todo 3", file1.clone(), 1, vec![]);
+        let td4 = Todo::new("Todo 4", file2.clone(), 1, vec![]);
 
         let project = Project::new(
-            String::from("My List"),
+            "My List",
             vec![td1.clone(), td2.clone(), td3.clone(), td4.clone()],
         );
 
@@ -153,30 +163,63 @@ mod tests_mod {
 
     #[test]
     fn try_to_group_todos_of_empty_list() {
-        let project = Project::new("My List".to_string(), vec![]);
+        let project = Project::new("My List", vec![]);
         let grouped = project.group_by_file();
         assert_eq!(grouped, None);
     }
 
     #[test]
     fn could_read_project_file() {
-        let project = Project::from_dir(Path::new("fixtures/project")).unwrap();
-        let expected_project = Project::new(
-            "todoco".to_string(),
-            vec![Todo::new(
-                "Use dialoguer Theme".to_string(),
-                SourceFile::new("dialog_config.rs".to_string(), "./ui/src".to_string()),
-                6,
-                vec![],
-            ), Todo::new(
-                "Old Todo".to_string(),
-                SourceFile::new("mod.rs".to_string(), "./ui/src".to_string()),
-                6,
-                vec![],
-            ).set_inactive().clone()],
+        let todo1 = Todo::new(
+            "Use dialoguer Theme",
+            SourceFile::new("dialog_config.rs", "./ui/src"),
+            6,
+            vec![],
         );
+        let mut todo2 = Todo::new("Old Todo", SourceFile::new("mod.rs", "./ui/src"), 6, vec![]);
+        todo2.set_inactive();
+
+        let project = Project::from_dir(Path::new("fixtures/project")).unwrap();
+        let expected_project = Project::new("todoco", vec![todo1, todo2]);
 
         assert_eq!(expected_project.name, project.name);
         assert_eq!(expected_project.todos.len(), project.todos.len());
+    }
+
+    #[test]
+    fn should_append_archive_to_existing_project() {
+        let todo1 = Todo::new(
+            "Some Meaningful Text",
+            SourceFile::new("Here", "test.rs"),
+            1,
+            vec![],
+        );
+        let mut project = Project::new("Test Project", vec![todo1]);
+
+        let mut todo2 = Todo::new(
+            "Some Other Text",
+            SourceFile::new("Here", "test.rs"),
+            1,
+            vec![],
+        );
+        todo2.set_inactive();
+
+        let mut archive = vec![todo2];
+        project.append_archive(&mut archive);
+
+        assert_eq!(project.get_archive().len(), 1);
+
+        let mut todo3 = Todo::new(
+            "Some Meaningful Other Text",
+            SourceFile::new("Here", "test.rs"),
+            1,
+            vec![],
+        );
+        todo3.set_inactive();
+
+        let mut archive = vec![todo3];
+        project.append_archive(&mut archive);
+
+        assert_eq!(project.get_archive().len(), 2);
     }
 }

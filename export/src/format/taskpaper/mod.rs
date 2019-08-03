@@ -68,14 +68,14 @@ mod tests_taskpaper_parser {
     #[test]
     fn create_taskpaper_string_from_project() {
         let project = Project::new(
-            String::from("Test"),
+            "Test",
             vec![Todo::new(
-                String::from("Todo 1"),
-                SourceFile::new(String::from("p.txt"), String::from("path/p.txt")),
+                "Todo 1",
+                SourceFile::new("p.txt", "path/p.txt"),
                 34,
                 vec![
-                    Tag::new(String::from("bla"), None),
-                    Tag::new(String::from("bli"), Some(String::from("blubb"))),
+                    Tag::new("bla", None),
+                    Tag::new("bli", Some("blubb".to_string())),
                 ],
             )],
         );

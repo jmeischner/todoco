@@ -7,9 +7,9 @@ pub struct Tag {
 }
 
 impl Tag {
-    pub fn new(name: String, value: Option<String>) -> Tag {
+    pub fn new(name: &str, value: Option<String>) -> Tag {
         Tag {
-            name: name,
+            name: name.to_string(),
             value: value,
         }
     }

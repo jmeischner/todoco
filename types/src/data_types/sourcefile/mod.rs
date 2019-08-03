@@ -7,10 +7,10 @@ pub struct SourceFile {
 }
 
 impl SourceFile {
-    pub fn new(name: String, path: String) -> SourceFile {
+    pub fn new(name: &str, path: &str) -> SourceFile {
         SourceFile {
-            name: name,
-            path: path,
+            name: name.to_string(),
+            path: path.to_string(),
         }
     }
 }
