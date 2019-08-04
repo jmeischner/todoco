@@ -1,4 +1,3 @@
-
 use crate::helper;
 use crate::search::pageprinter::printer::textprinter::TextPrinter;
 use crate::search::term::{
@@ -46,28 +45,23 @@ pub fn list(keyword: Option<&str>, matches: FilterMatch, dir: PathBuf) -> IOResu
     });
 
     let dialog = TermDialog::new(Term::stdout(), keyword_search_term);
-    dialog.start()
+    dialog.start()?;
+
+    let term = Term::stdout();
+    term.clear_screen()?;
+    let goodbye_line = helper::get_goodbye_message();
+    term.write_line(&format!("{}", style(goodbye_line).bold()))
 }
 
 fn start_keyword_control_term(searchterm: KeywordSearchTerm) -> IOResult<()> {
-    let mut term = KeywordControlTerm::new(
+    let term = KeywordControlTerm::new(
         searchterm.get_items().clone(),
         searchterm.get_term().clone(),
     )
     .set_project(searchterm.get_project())
     .set_keyword(searchterm.get_keyword())
     .set_headline(searchterm.headline());
-    // Todo: This should work for multiple shifting between ia and control mode @next
-    term.set_on_quit(|me, by_escape| {
-        if by_escape {
-            me.get_term().clear_screen()?;
-            let goodbye_line = helper::get_goodbye_message();
-            me.get_term()
-                .write_line(&format!("{}", style(goodbye_line).bold()))
-        } else {
-            Ok(())
-        }
-    });
+
     let dialog = TermDialog::new(searchterm.get_term().clone(), term);
     dialog.start()
 }
