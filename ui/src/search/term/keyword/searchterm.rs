@@ -3,7 +3,6 @@ use super::MatchType;
 use crate::search::pageprinter::printer::{todoprinter::TodoPrinter, ItemPrinter};
 use crate::search::term::SearchTerm;
 use crate::search::term::TermDialog;
-
 use console::{style, Term};
 use std::io::Result as IOResult;
 use todofilter;
@@ -18,7 +17,7 @@ pub struct KeywordSearchTerm {
     keyword: Option<String>,
     project: Option<Project>,
     match_type: MatchType,
-    quitter: Option<fn(me: Self) -> IOResult<()>>,
+    quitter: Option<fn(me: Self, by_escape: bool) -> IOResult<()>>,
 }
 
 impl SearchTerm<Todo, TodoPrinter> for KeywordSearchTerm {
@@ -46,9 +45,8 @@ impl SearchTerm<Todo, TodoPrinter> for KeywordSearchTerm {
         &self.term
     }
 
-    fn set_on_quit(mut self, f: fn(_: Self) -> IOResult<()>) -> KeywordSearchTerm {
+    fn set_on_quit(&mut self, f: fn(_: Self, _: bool) -> IOResult<()>) {
         self.quitter = Some(f);
-        self
     }
 
     fn char_match(&self, c: char) -> IOResult<bool> {
@@ -72,9 +70,9 @@ impl SearchTerm<Todo, TodoPrinter> for KeywordSearchTerm {
         }
     }
 
-    fn on_quit(&self) -> IOResult<()> {
+    fn on_quit(&self, by_escape: bool) -> IOResult<()> {
         if let Some(quitter) = self.quitter {
-            quitter(self.clone())
+            quitter(self.clone(), by_escape)
         } else {
             Ok(())
         }
@@ -100,6 +98,7 @@ impl SearchTerm<Todo, TodoPrinter> for KeywordSearchTerm {
 }
 
 impl KeywordSearchTerm {
+
     pub fn set_project(mut self, project: Project) -> KeywordSearchTerm {
         self.project = Some(project);
         self
@@ -129,16 +128,17 @@ impl KeywordSearchTerm {
     }
 
     fn show_filtered_list(&self, keyword: String) -> IOResult<()> {
-        let keyword_search_term = self
-            .get_filtered_todos(&keyword)
-            .set_project(self.get_project())
-            .set_keyword(keyword);
+        let mut keyword_search_term = self.get_filtered_search_term(&keyword);
+
+        if let Some(quitter) = self.quitter {
+            keyword_search_term.set_on_quit(quitter);
+        }
 
         let dialog = TermDialog::new(self.term.clone(), keyword_search_term);
         dialog.start()
     }
 
-    pub fn get_filtered_todos(&self, keyword: &str) -> KeywordSearchTerm {
+    pub fn get_filtered_search_term(&self, keyword: &str) -> KeywordSearchTerm {
         let term = self.term.clone();
 
         let filter_key = if keyword.len() > 0 {
@@ -151,6 +151,8 @@ impl KeywordSearchTerm {
             .unwrap_or(FilterMatch::None);
 
         KeywordSearchTerm::new_from_filter_match(filtered_todos, term)
+            .set_project(self.get_project())
+            .set_keyword(keyword.to_string())
     }
 
     pub fn new_from_filter_match(filter: FilterMatch, term: Term) -> KeywordSearchTerm {

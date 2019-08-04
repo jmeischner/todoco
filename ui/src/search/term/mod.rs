@@ -6,16 +6,17 @@ use std::io::Result as IOResult;
 use std::marker::PhantomData;
 
 
-pub mod alltodosterm;
 pub mod alltagsterm;
+pub mod alltodosterm;
 pub mod keyword;
 pub mod mainterm;
 
-pub use alltodosterm::AllTodosTerm;
-pub use keyword::searchterm::KeywordSearchTerm;
-pub use keyword::controlterm::KeywordControlTerm;
-pub use mainterm::MainTerm;
 pub use alltagsterm::AllTagsTerm;
+pub use alltodosterm::AllTodosTerm;
+pub use keyword::controlterm::KeywordControlTerm;
+pub use keyword::searchterm::KeywordSearchTerm;
+pub use mainterm::MainTerm;
+
 
 /// Trait for implementing specific term ui
 /// of the search cli verb
@@ -37,8 +38,8 @@ where
     fn get_printer(&self) -> &P;
     fn get_term(&self) -> &Term;
     fn char_match(&self, c: char) -> IOResult<bool>;
-    fn set_on_quit(self, f: fn(current: Self) -> IOResult<()>) -> Self;
-    fn on_quit(&self) -> IOResult<()>;
+    fn set_on_quit(&mut self, f: fn(current: Self, by_escape: bool) -> IOResult<()>);
+    fn on_quit(&self, by_escape: bool) -> IOResult<()>;
     fn get_footer_options(&self) -> Vec<FooterOption>;
     fn headline(&self) -> String;
 }
@@ -94,6 +95,7 @@ impl<I: Clone, P: ItemPrinter<I> + Clone, S: SearchTerm<I, P> + Clone> TermDialo
     }
 
     fn main(&self) -> IOResult<()> {
+        let mut break_by_escape = false;
         let mut page_printer = self.get_page_printer();
 
         // Print Start Page
@@ -125,19 +127,19 @@ impl<I: Clone, P: ItemPrinter<I> + Clone, S: SearchTerm<I, P> + Clone> TermDialo
                     self.footer()?;
                 }
                 Key::Escape => {
+                    break_by_escape = true;
                     break;
                 }
                 _ => {}
             }
         }
 
-        self.search.on_quit()
+        self.search.on_quit(break_by_escape)
     }
 
     fn get_term_height(&self) -> usize {
-        let static_lines = self.get_number_of_header_lines()
-            + self.get_number_of_footer_lines()
-            + 1; // Line for read_key
+        let static_lines =
+            self.get_number_of_header_lines() + self.get_number_of_footer_lines() + 1; // Line for read_key
 
         let term_height = helper::get_term_height(&self.term);
 

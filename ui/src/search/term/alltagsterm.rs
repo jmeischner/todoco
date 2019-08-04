@@ -34,9 +34,7 @@ impl SearchTerm<Tag, TagPrinter> for AllTagsTerm {
         &self.term
     }
 
-    fn set_on_quit(self, _: fn(_: Self) -> IOResult<()>) -> AllTagsTerm {
-        self
-    }
+    fn set_on_quit(&mut self, _: fn(_: Self, _: bool) -> IOResult<()>) {}
 
     fn char_match(&self, c: char) -> IOResult<bool> {
         match c {
@@ -44,7 +42,7 @@ impl SearchTerm<Tag, TagPrinter> for AllTagsTerm {
         }
     }
 
-    fn on_quit(&self) -> IOResult<()> {
+    fn on_quit(&self, _: bool) -> IOResult<()> {
         search::start()
     }
 

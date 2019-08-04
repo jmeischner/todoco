@@ -1,11 +1,10 @@
-use super::super::FooterOption;
-use super::searchterm::KeywordSearchTerm;
-use super::MatchType;
 use crate::search::pageprinter::printer::{todoprinter::TodoPrinter, ItemPrinter};
 use crate::search::term::SearchTerm;
 use crate::search::term::TermDialog;
+use super::super::FooterOption;
+use super::searchterm::KeywordSearchTerm;
 
-use console::{style, Term};
+use console::Term;
 use std::io::Result as IOResult;
 use types::{Project, Todo};
 
@@ -16,8 +15,8 @@ pub struct KeywordControlTerm {
     printer: TodoPrinter,
     keyword: Option<String>,
     project: Option<Project>,
-    match_type: MatchType,
-    quitter: Option<fn(me: Self) -> IOResult<()>>,
+    headline: String,
+    quitter: Option<fn(me: Self, by_escape: bool) -> IOResult<()>>,
 }
 
 impl SearchTerm<Todo, TodoPrinter> for KeywordControlTerm {
@@ -28,7 +27,7 @@ impl SearchTerm<Todo, TodoPrinter> for KeywordControlTerm {
             printer: TodoPrinter::new(),
             keyword: None,
             project: None,
-            match_type: MatchType::All,
+            headline: "All Todos".to_string(),
             quitter: None,
         }
     }
@@ -45,9 +44,8 @@ impl SearchTerm<Todo, TodoPrinter> for KeywordControlTerm {
         &self.term
     }
 
-    fn set_on_quit(mut self, f: fn(_: Self) -> IOResult<()>) -> KeywordControlTerm {
+    fn set_on_quit(&mut self, f: fn(_: Self, _: bool) -> IOResult<()>) {
         self.quitter = Some(f);
-        self
     }
 
     fn char_match(&self, c: char) -> IOResult<bool> {
@@ -60,9 +58,9 @@ impl SearchTerm<Todo, TodoPrinter> for KeywordControlTerm {
         }
     }
 
-    fn on_quit(&self) -> IOResult<()> {
+    fn on_quit(&self, by_escape: bool) -> IOResult<()> {
         if let Some(quitter) = self.quitter {
-            quitter(self.clone())
+            quitter(self.clone(), by_escape)
         } else {
             Ok(())
         }
@@ -73,21 +71,16 @@ impl SearchTerm<Todo, TodoPrinter> for KeywordControlTerm {
     }
 
     fn headline(&self) -> String {
-        let found = style("Search").bold();
-        let key = style(self.get_keyword()).blue();
-        let by = match self.match_type {
-            MatchType::Text => style("In Todo Description").cyan(),
-            MatchType::Tags => style("By Tag Name").cyan(),
-            MatchType::None => style("No Matching Todos Found").red(),
-            MatchType::Files => style("By Match in Pathname").cyan(),
-            MatchType::All => style("Match All Todos").green(),
-        };
-
-        format!("{}: {}    - {}", found, key, by)
+        self.headline.clone()
     }
 }
 
 impl KeywordControlTerm {
+    pub fn set_headline(mut self, line: String) -> KeywordControlTerm {
+        self.headline = line;
+        self
+    }
+
     pub fn set_project(mut self, project: Project) -> KeywordControlTerm {
         self.project = Some(project);
         self
@@ -112,19 +105,24 @@ impl KeywordControlTerm {
     }
 
     fn start_keyword_search_term(&self) -> IOResult<()> {
-        let keyword_search_term =
-            KeywordSearchTerm::new(self.get_project().get_todos().clone(), self.term.clone())
-                .get_filtered_todos(&self.get_keyword())
-                .set_keyword(self.get_keyword())
+        let mut keyword_search_term =
+            KeywordSearchTerm::new(self.get_items().clone(), self.term.clone())
                 .set_project(self.get_project())
-                .set_on_quit(|me: KeywordSearchTerm| {
-                    let term =
-                        KeywordControlTerm::new(me.get_items().clone(), me.get_term().clone())
-                            .set_project(me.get_project())
-                            .set_keyword(me.get_keyword());
-                    let dialog = TermDialog::new(me.get_term().clone(), term);
-                    dialog.start()
-                });
+                .get_filtered_search_term(&self.get_keyword());
+        keyword_search_term.set_on_quit(|me: KeywordSearchTerm, by_escape: bool| {
+            if by_escape {
+                let term =
+                    KeywordControlTerm::new(me.get_items().clone(), me.get_term().clone())
+                        .set_project(me.get_project())
+                        .set_keyword(me.get_keyword())
+                        .set_headline(me.headline());
+
+                let dialog = TermDialog::new(me.get_term().clone(), term);
+                dialog.start()
+            } else {
+                Ok(())
+            }
+        });
         let dialog = TermDialog::new(Term::stdout(), keyword_search_term);
         dialog.start()
     }

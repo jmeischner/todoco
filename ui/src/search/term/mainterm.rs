@@ -32,9 +32,7 @@ impl SearchTerm<String, TextPrinter> for MainTerm {
         &self.term
     }
 
-    fn set_on_quit(self, _: fn(_: Self) -> IOResult<()>) -> MainTerm {
-        self
-    }
+    fn set_on_quit(&mut self, _: fn(_: Self, _: bool) -> IOResult<()>) {}
 
     fn get_printer(&self) -> &TextPrinter {
         &self.printer
@@ -63,7 +61,7 @@ impl SearchTerm<String, TextPrinter> for MainTerm {
         }
     }
 
-    fn on_quit(&self) -> IOResult<()> {
+    fn on_quit(&self, _: bool) -> IOResult<()> {
         self.term.clear_screen()?;
 
         let goodbye_line = helper::get_goodbye_message();
@@ -98,9 +96,9 @@ impl MainTerm {
         let (is_project, _config) = types_helper::get_config_and_project_info_from(&current_dir);
         // todo: handle @error
         let project = todofilter::get_project(is_project, &current_dir).unwrap();
-        let keyword_control_term = KeywordControlTerm::new(project.todos.clone(), self.term.clone())
-            .set_project(project)
-            .set_on_quit(|_| search::start());
+        let mut keyword_control_term =
+            KeywordControlTerm::new(project.todos.clone(), self.term.clone()).set_project(project);
+        keyword_control_term.set_on_quit(|_, _| search::start());
         let dialog = TermDialog::new(self.term.clone(), keyword_control_term);
         dialog.start()
     }
