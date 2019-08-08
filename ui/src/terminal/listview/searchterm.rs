@@ -1,6 +1,7 @@
 use console::Term;
 use std::io::Result as IOResult;
-use super::{FooterOption, ItemPrinter};
+use super::pageprinter::ItemPrinter;
+use super::super::FooterOption;
 
 /// Trait for implementing specific term ui
 /// of the search cli verb

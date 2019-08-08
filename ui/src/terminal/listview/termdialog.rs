@@ -1,9 +1,10 @@
 use console::{style, Key, Term};
 use crate::helper;
-use super::{FooterOption, ItemPrinter, SearchTerm};
-use super::pageprinter::{Page, PagePrinter};
 use std::io::Result as IOResult;
 use std::marker::PhantomData;
+use super::pageprinter::{Page, ItemPrinter, PagePrinter};
+use super::searchterm::SearchTerm;
+use super::super::{FooterOption};
 
 /// Struct which is the outer shell
 /// of the interactive `SearchTerm`
