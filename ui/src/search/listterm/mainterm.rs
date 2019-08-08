@@ -1,10 +1,10 @@
-use super::FooterOption;
+use console::{style, Term};
 use crate::helper;
 use crate::search;
-use crate::search::pageprinter::printer::{textprinter::TextPrinter, ItemPrinter};
-use crate::search::term::{AllTagsTerm, AllTodosTerm, KeywordControlTerm, SearchTerm, TermDialog};
-use console::{style, Term};
+use crate::search::TextPrinter;
+use crate::terminal::{FooterOption, ItemPrinter, SearchTerm, TermDialog};
 use std::io::Result as IOResult;
+use super::{AllTagsTerm, AllTodosTerm, KeywordControlTerm};
 use todofilter;
 use types::config::helper as types_helper;
 

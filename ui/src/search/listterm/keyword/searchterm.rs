@@ -1,10 +1,8 @@
-use super::super::FooterOption;
-use super::MatchType;
-use crate::search::pageprinter::printer::{todoprinter::TodoPrinter, ItemPrinter};
-use crate::search::term::SearchTerm;
-use crate::search::term::TermDialog;
 use console::{style, Term};
+use crate::search::TodoPrinter;
+use crate::terminal::{FooterOption, ItemPrinter, SearchTerm, TermDialog};
 use std::io::Result as IOResult;
+use super::MatchType;
 use todofilter;
 use types::{FilterMatch, Project, Todo};
 

@@ -1,8 +1,7 @@
-use super::FooterOption;
-use crate::search;
-use crate::search::pageprinter::printer::{tagprinter::TagPrinter, ItemPrinter};
-use crate::search::term::SearchTerm;
 use console::{style, Term};
+use crate::search;
+use crate::search::TagPrinter;
+use crate::terminal::{FooterOption, ItemPrinter, SearchTerm};
 use std::io::Result as IOResult;
 use types::Tag;
 

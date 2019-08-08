@@ -1,15 +1,19 @@
 use crate::helper;
-use crate::search::pageprinter::printer::textprinter::TextPrinter;
-use crate::search::term::{
-    KeywordControlTerm, KeywordSearchTerm, MainTerm, SearchTerm, TermDialog,
+use crate::terminal::{SearchTerm, TermDialog};
+use crate::search::listterm::{
+    KeywordControlTerm, KeywordSearchTerm, MainTerm
 };
 use console::{style, Term};
 use std::io::Result as IOResult;
 use std::path::PathBuf;
 use types::{config::helper as types_helper, FilterMatch};
 
-pub mod pageprinter;
-pub mod term;
+pub mod listterm;
+mod printer;
+
+pub use printer::tagprinter::TagPrinter;
+pub use printer::textprinter::TextPrinter;
+pub use printer::todoprinter::TodoPrinter;
 
 
 /// todoco search opening dialog

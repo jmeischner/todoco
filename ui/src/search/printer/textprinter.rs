@@ -1,6 +1,6 @@
-use super::ItemPrinter;
-use std::io::Result as IOResult;
 use console::Term;
+use crate::terminal::ItemPrinter;
+use std::io::Result as IOResult;
 use std::marker::PhantomData;
 
 #[derive(Clone)]

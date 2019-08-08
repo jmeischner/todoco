@@ -1,8 +1,7 @@
-use super::FooterOption;
-use crate::search;
-use crate::search::pageprinter::printer::{todoprinter::TodoPrinter, ItemPrinter};
-use crate::search::term::SearchTerm;
 use console::{style, Term};
+use crate::search;
+use crate::search::TodoPrinter;
+use crate::terminal::{FooterOption, ItemPrinter, SearchTerm};
 use std::io::Result as IOResult;
 use types::Todo;
 

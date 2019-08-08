@@ -1,65 +1,9 @@
-use crate::helper;
-use crate::search::pageprinter::printer::ItemPrinter;
-use crate::search::pageprinter::{Page, PagePrinter};
 use console::{style, Key, Term};
+use crate::helper;
+use super::{FooterOption, ItemPrinter, SearchTerm};
+use super::pageprinter::{Page, PagePrinter};
 use std::io::Result as IOResult;
 use std::marker::PhantomData;
-
-
-pub mod alltagsterm;
-pub mod alltodosterm;
-pub mod keyword;
-pub mod mainterm;
-
-pub use alltagsterm::AllTagsTerm;
-pub use alltodosterm::AllTodosTerm;
-pub use keyword::controlterm::KeywordControlTerm;
-pub use keyword::searchterm::KeywordSearchTerm;
-pub use mainterm::MainTerm;
-
-
-/// Trait for implementing specific term ui
-/// of the search cli verb
-///
-/// # Function
-/// `new` - create a new instance of term
-/// `get_items` - getter of items hold by the term
-/// `get_printer` - getter of the printer corresponding to the term
-/// `char_match` - matcher of keyboard input keys to corresponding actions
-/// `on_quit` - action to perform when closing ui
-/// `get_footer_options` - Options corresponding to `char_match` actions
-/// `headline` - function returning the headline
-pub trait SearchTerm<I: Clone, P: Clone>
-where
-    P: ItemPrinter<I>,
-{
-    fn new(items: Vec<I>, term: Term) -> Self;
-    fn get_items(&self) -> &Vec<I>;
-    fn get_printer(&self) -> &P;
-    fn get_term(&self) -> &Term;
-    fn char_match(&self, c: char) -> IOResult<bool>;
-    fn set_on_quit(&mut self, f: fn(current: Self, by_escape: bool) -> IOResult<()>);
-    fn on_quit(&self, by_escape: bool) -> IOResult<()>;
-    fn get_footer_options(&self) -> Vec<FooterOption>;
-    fn headline(&self) -> String;
-}
-
-/// Struct for giving the `TermDialog`
-/// an overview of the `SearchTerm`
-/// footer options
-pub struct FooterOption {
-    key: String,
-    description: String,
-}
-
-impl FooterOption {
-    pub fn new(key: &str, description: &str) -> FooterOption {
-        FooterOption {
-            key: key.to_string(),
-            description: description.to_string(),
-        }
-    }
-}
 
 /// Struct which is the outer shell
 /// of the interactive `SearchTerm`
@@ -174,8 +118,8 @@ impl<I: Clone, P: ItemPrinter<I> + Clone, S: SearchTerm<I, P> + Clone> TermDialo
         let mut footer = options.iter().rev().fold(String::new(), |text, option| {
             format!(
                 "{}: {} | {}",
-                style(&option.key).blue(),
-                option.description,
+                style(option.get_key()).blue(),
+                option.get_description(),
                 text
             )
         });

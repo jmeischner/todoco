@@ -1,7 +1,3 @@
-pub mod tagprinter;
-pub mod textprinter;
-pub mod todoprinter;
-
 use console::Term;
 use std::io::Result as IOResult;
 

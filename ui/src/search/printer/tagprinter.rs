@@ -1,4 +1,4 @@
-use super::ItemPrinter;
+use crate::terminal::ItemPrinter;
 
 use console::Term;
 use std::io::Result as IOResult;

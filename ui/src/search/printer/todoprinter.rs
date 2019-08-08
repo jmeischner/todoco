@@ -1,6 +1,6 @@
-use super::ItemPrinter;
-use crate::helper;
 use console::{style, Term};
+use crate::helper;
+use crate::terminal::ItemPrinter;
 use std::io::Result as IOResult;
 use std::path::Path;
 use types::Todo;

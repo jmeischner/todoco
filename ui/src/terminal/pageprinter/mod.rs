@@ -1,12 +1,10 @@
 use console::Term;
+pub use itemprinter::ItemPrinter;
 use pager::Pager;
-use printer::ItemPrinter;
 use std::io::Result as IOResult;
 
-
+mod itemprinter;
 mod pager;
-pub mod printer;
-
 /// Enum to Identify which Page
 /// the PagePrinter should show
 ///
