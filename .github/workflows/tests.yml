@@ -30,17 +30,17 @@ jobs:
 
     #### UPLOAD ARTIFACTS ####
     - uses: actions/upload-artifact@v1
-      if: matrix.os == macOS-latest
+      if: matrix.os == 'macOS-latest'
       with:
         name: todoco.mac
         path: ./target/release/todoco
     - uses: actions/upload-artifact@v1
-      if: matrix.os == ubuntu-latest
+      if: matrix.os == 'ubuntu-latest'
       with:
         name: todoco.ubuntu
         path: ./target/release/todoco
     - uses: actions/upload-artifact@v1
-      if: matrix.os == windows-latest
+      if: matrix.os == 'windows-latest'
       with:
         name: todoco.windows
         path: ./target/release/todoco.exe
