@@ -1,6 +1,7 @@
 name: Test And Build
 on: [push]
 
+# Todo: Decide For new version use cargo login $CRATES_IO_TOKEN and cargo publish
 jobs:
   build:
     runs-on: ${{ matrix.os }}
@@ -26,10 +27,20 @@ jobs:
       with:
           command: build
           args: --release --package todoco
-    # For new version use cargo login $CRATES_IO_TOKEN and cargo publish
-    - name: Show Output dir
-      run: ls -lisa ./target/release
+
+    #### UPLOAD ARTIFACTS ####
     - uses: actions/upload-artifact@v1
+      if: matrix.os == macOS-latest
       with:
-        name: todoco.{{ matrix.os }}
+        name: todoco.mac
         path: ./target/release/todoco
+    - uses: actions/upload-artifact@v1
+      if: matrix.os == ubuntu-latest
+      with:
+        name: todoco.ubuntu
+        path: ./target/release/todoco
+    - uses: actions/upload-artifact@v1
+      if: matrix.os == windows-latest
+      with:
+        name: todoco.windows
+        path: ./target/release/todoco.exe
