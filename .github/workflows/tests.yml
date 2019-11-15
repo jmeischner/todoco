@@ -27,7 +27,9 @@ jobs:
           command: build
           args: --release --package todoco
     # For new version use cargo login $CRATES_IO_TOKEN and cargo publish
+    - name: Show Output dir
+      run: ls -lisa ./target/release
     - uses: actions/upload-artifact@v1
       with:
-        name: todoco
+        name: todoco.{{ matrix.os }}
         path: ./target/release/todoco
