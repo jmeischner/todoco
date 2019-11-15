@@ -18,11 +18,11 @@ jobs:
         toolchain: stable
         default: true
         override: true
-    - name: Build todoco Artifact
-      uses: actions-rs/cargo@v1
-      with:
-          command: build
-          args: --release --package todoco
+    # - name: Build todoco Artifact
+    #   uses: actions-rs/cargo@v1
+    #   with:
+    #       command: build
+    #       args: --release --package todoco
 
     #### UPLOAD ARTIFACTS ####
     - name: Upload Release Asset For Mac
@@ -32,8 +32,8 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        upload_url: https://github.com/jmeischner/todoco/releases/tag/${{ github.ref }}/assets
-        asset_path: ./target/release/todoco
+        upload_url: ${{ github.event.upload_url }}
+        asset_path: Cargo.toml
         asset_name: todoco.mac
         asset_content_type: application/octet-stream
     - name: Upload Release Asset For Ubuntu
@@ -43,8 +43,8 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        upload_url: https://github.com/jmeischner/todoco/releases/tag/${{ github.ref }}/assets
-        asset_path: ./target/release/todoco
+        upload_url: ${{ github.event.upload_url }}
+        asset_path: Cargo.toml
         asset_name: todoco.ubuntu
         asset_content_type: application/octet-stream
     - name: Upload Release Asset For Windows
@@ -54,7 +54,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        upload_url: https://github.com/jmeischner/todoco/releases/tag/${{ github.ref }}/assets
-        asset_path: ./target/release/todoco.exe
+        upload_url: ${{ github.event.upload_url }}
+        asset_path: Cargo.toml
         asset_name: todoco.windows.exe
         asset_content_type: application/octet-stream
