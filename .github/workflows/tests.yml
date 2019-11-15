@@ -12,10 +12,10 @@ jobs:
     - name: Install minimal Rust version
       uses: actions-rs/toolchain@v1
       with:
-        toolchain: stable
         profile: minimal
-        override: true
+        toolchain: stable
         default: true
+        override: true
     - name: Execute Tests
       uses: actions-rs/cargo@v1
       with:
@@ -30,4 +30,4 @@ jobs:
     - uses: actions/upload-artifact@v1
       with:
         name: todoco
-        path: "${GITHUB_WORKSPACE}/target/release/todoco"
+        path: ./target/release/todoco
