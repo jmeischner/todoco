@@ -1,0 +1,82 @@
+name: Build Release
+on:
+  push:
+    tags:
+      - 'v*'
+    paths-ignore:
+      - '.todoco/**'
+      - '.todocoignore'
+      - '**/*.md'
+      - 'todoco.*'
+
+# Todo: Decide For new version use cargo login $CRATES_IO_TOKEN and cargo publish
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macOS-latest, windows-latest]
+    steps:
+    - uses: actions/checkout@v1
+    - name: Install Minimal Rust Version
+      uses: actions-rs/toolchain@v1
+      with:
+        profile: minimal
+        toolchain: stable
+        default: true
+        override: true
+    - name: Execute Tests
+      uses: actions-rs/cargo@v1
+      with:
+        command: test
+        args: --verbose
+    - name: Build todoco Artifact
+      uses: actions-rs/cargo@v1
+      with:
+          command: build
+          args: --release --package todoco
+
+    #### UPLOAD ARTIFACTS ####
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1.0.0
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ github.ref }}
+        draft: false
+        prerelease: false    
+    - name: Upload Release Asset For Mac
+      if: matrix.os == 'macOS-latest'
+      id: upload-release-asset 
+      uses: actions/upload-release-asset@v1.0.1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
+        asset_path: ./target/release/todoco
+        asset_name: todoco.mac
+        asset_content_type: application/octet-stream
+    - name: Upload Release Asset For Ubuntu
+      if: matrix.os == 'ubuntu-latest'
+      id: upload-release-asset 
+      uses: actions/upload-release-asset@v1.0.1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
+        asset_path: ./target/release/todoco
+        asset_name: todoco.ubuntu
+        asset_content_type: application/octet-stream
+    - name: Upload Release Asset For Windows
+      if: matrix.os == 'windows-latest'
+      id: upload-release-asset 
+      uses: actions/upload-release-asset@v1.0.1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
+        asset_path: ./target/release/todoco.exe
+        asset_name: todoco.windows.exe
+        asset_content_type: application/octet-stream

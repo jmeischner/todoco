@@ -1,8 +1,8 @@
-name: Build New Version
+name: Build Nightly
 on:
   push:
     branches:
-      - 'master'
+      - 'release'
     paths-ignore:
       - '.todoco/**'
       - '.todocoignore'
