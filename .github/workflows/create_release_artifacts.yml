@@ -12,7 +12,8 @@ jobs:
     steps:
     - uses: actions/checkout@v1 
     - name: echo event
-      run: ${{ github.event }}
+      run: print("${{ github.event }}")
+      shell: python
     # - name: Install Minimal Rust Version
     #   uses: actions-rs/toolchain@v1
     #   with:
