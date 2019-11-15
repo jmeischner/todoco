@@ -7,8 +7,6 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macOS-latest, windows-latest]
-    env:
-      PATH: "$PATH:$HOME/.cargo/bin"
     steps:
     - name: Install cargo
       if: matrix.os == 'macOS-latest'
