@@ -8,11 +8,19 @@ jobs:
       matrix:
         os: [ubuntu-latest, macOS-latest, windows-latest]
     steps:
-    - name: Install cargo
-      if: matrix.os == 'macOS-latest'
-      run: curl https://sh.rustup.rs -sSf | sh -s -- -y && echo "::add-path::${HOME}/.cargo/bin"
     - uses: actions/checkout@v1
-    - name: Run tests
-      run: cargo test --verbose
-    - name: Run build
-      run: cargo build --verbose
+    - uses: actions-rs/cargo@v1
+      with:
+        command: test
+        args: --verbose
+        toolchain: default
+    - name: actions-rs/cargo@v1
+      with:
+          command: build
+          args: --release --package todoco
+          toolchain: default
+    # For new version use cargo login $CRATES_IO_TOKEN and cargo publish
+    - uses: actions/upload-artifact@v1
+      with:
+        name: todoco
+        path: $GITHUB_WORKSPACE/target/release/todoco
