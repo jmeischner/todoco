@@ -3,14 +3,17 @@ name = "todoco"
 version = "0.4.3"
 authors = ["Jan Meischner <jan.meischner@googlemail.com>"]
 edition = "2018"
+description = "`todoco` is a CLI to extract, list and work with //ToDo: Comments in your codebase."
+license = "GPLv2"
+repository = "https://github.com/jmeischner/todoco"
 
 [dependencies]
-ui = { path = "../ui" }
-export = { path = "../export" }
-appconfig = { path = "../appconfig" }
-types = { path = "../types" }
-todofilter = { path = "../todofilter" }
-todoscanner = { path = "../todoscanner" }
+ui = { path = "../ui", version = "0.1.0"}
+export = { path = "../export", version = "0.1.0" }
+appconfig = { path = "../appconfig", version = "0.1.0" }
+types = { path = "../types", version = "0.1.0" }
+todofilter = { path = "../todofilter", version = "0.1.0" }
+todoscanner = { path = "../todoscanner", version = "0.1.0" }
 clap = {version = "^2.33.0", features= ["yaml", "suggestions"]}
 ignore = "^0.4.7"
 toml = "^0.4.2"
