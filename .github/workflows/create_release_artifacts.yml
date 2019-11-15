@@ -10,53 +10,51 @@ jobs:
       matrix:
         os: [ubuntu-latest, macOS-latest, windows-latest]
     steps:
-    - uses: actions/checkout@v1 
-    - name: echo event
-      run: echo ${{ github.event.release.upload_url }}
-    # - name: Install Minimal Rust Version
-    #   uses: actions-rs/toolchain@v1
-    #   with:
-    #     profile: minimal
-    #     toolchain: stable
-    #     default: true
-    #     override: true
-    # - name: Build todoco Artifact
-    #   uses: actions-rs/cargo@v1
-    #   with:
-    #       command: build
-    #       args: --release --package todoco
+    - uses: actions/checkout@v1
+    - name: Install Minimal Rust Version
+      uses: actions-rs/toolchain@v1
+      with:
+        profile: minimal
+        toolchain: stable
+        default: true
+        override: true
+    - name: Build todoco Artifact
+      uses: actions-rs/cargo@v1
+      with:
+          command: build
+          args: --release --package todoco
 
-    #### UPLOAD ARTIFACTS ####
-    # - name: Upload Release Asset For Mac
-    #   if: matrix.os == 'macOS-latest'
-    #   id: upload-release-asset-mac
-    #   uses: actions/upload-release-asset@v1.0.1
-    #   env:
-    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    #   with:
-    #     upload_url: ${{ github.event.upload_url }}
-    #     asset_path: Cargo.toml
-    #     asset_name: todoco.mac
-    #     asset_content_type: application/octet-stream
-    # - name: Upload Release Asset For Ubuntu
-    #   if: matrix.os == 'ubuntu-latest'
-    #   id: upload-release-asset-ubuntu
-    #   uses: actions/upload-release-asset@v1.0.1
-    #   env:
-    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    #   with:
-    #     upload_url: ${{ github.event.upload_url }}
-    #     asset_path: Cargo.toml
-    #     asset_name: todoco.ubuntu
-    #     asset_content_type: application/octet-stream
-    # - name: Upload Release Asset For Windows
-    #   if: matrix.os == 'windows-latest'
-    #   id: upload-release-asset-windows
-    #   uses: actions/upload-release-asset@v1.0.1
-    #   env:
-    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    #   with:
-    #     upload_url: ${{ github.event.upload_url }}
-    #     asset_path: Cargo.toml
-    #     asset_name: todoco.windows.exe
-    #     asset_content_type: application/octet-stream
+    #### UPLOAD ARTIFACTS #### 
+    - name: Upload Release Asset For Mac
+      if: matrix.os == 'macOS-latest'
+      id: upload-release-asset-mac
+      uses: actions/upload-release-asset@v1.0.1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ github.event.release.upload_url }} 
+        asset_path: ./target/release/todoco
+        asset_name: todoco.mac
+        asset_content_type: application/octet-stream
+    - name: Upload Release Asset For Ubuntu
+      if: matrix.os == 'ubuntu-latest'
+      id: upload-release-asset-ubuntu
+      uses: actions/upload-release-asset@v1.0.1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ github.event.release.upload_url }} 
+        asset_path: ./target/release/todoco
+        asset_name: todoco.ubuntu
+        asset_content_type: application/octet-stream
+    - name: Upload Release Asset For Windows
+      if: matrix.os == 'windows-latest'
+      id: upload-release-asset-windows
+      uses: actions/upload-release-asset@v1.0.1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ github.event.release.upload_url }} 
+        asset_path: ./target/release/todoco.exe
+        asset_name: todoco.exe
+        asset_content_type: application/octet-stream
