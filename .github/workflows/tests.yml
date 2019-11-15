@@ -11,18 +11,18 @@ jobs:
     - uses: actions/checkout@v1
     - uses: actions-rs/toolchain@v1
       with:
-        toolchain: minimal
+        toolchain: default
         override: true
     - uses: actions-rs/cargo@v1
       with:
         command: test
         args: --verbose
-        toolchain: minimal
+        toolchain: default
     - uses: actions-rs/cargo@v1
       with:
           command: build
           args: --release --package todoco
-          toolchain: minimal
+          toolchain: default
     # For new version use cargo login $CRATES_IO_TOKEN and cargo publish
     - uses: actions/upload-artifact@v1
       with:
