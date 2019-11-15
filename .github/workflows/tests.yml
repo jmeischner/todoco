@@ -9,22 +9,25 @@ jobs:
         os: [ubuntu-latest, macOS-latest, windows-latest]
     steps:
     - uses: actions/checkout@v1
-    - uses: actions-rs/toolchain@v1
+    - name: Install minimal Rust version
+      uses: actions-rs/toolchain@v1
       with:
         toolchain: stable
+        profile: minimal
         override: true
-    - uses: actions-rs/cargo@v1
+        default: true
+    - name: Execute Tests
+      uses: actions-rs/cargo@v1
       with:
         command: test
         args: --verbose
-        toolchain: stable
-    - uses: actions-rs/cargo@v1
+    - name: Build todoco Artifact
+      uses: actions-rs/cargo@v1
       with:
           command: build
           args: --release --package todoco
-          toolchain: stable
     # For new version use cargo login $CRATES_IO_TOKEN and cargo publish
     - uses: actions/upload-artifact@v1
       with:
         name: todoco
-        path: $GITHUB_WORKSPACE/target/release/todoco
+        path: "${GITHUB_WORKSPACE}/target/release/todoco"
