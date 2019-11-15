@@ -10,9 +10,9 @@ jobs:
       matrix:
         os: [ubuntu-latest, macOS-latest, windows-latest]
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v1 
     - name: echo event
-      run: "jq . ${{ github.event }}"
+      run: ${{ github.event }}
     # - name: Install Minimal Rust Version
     #   uses: actions-rs/toolchain@v1
     #   with:
