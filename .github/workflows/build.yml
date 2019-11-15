@@ -1,5 +1,8 @@
-name: Test And Build
-on: [push]
+name: Build New Version
+on:
+  push:
+    branches:
+      - 'master'
 
 # Todo: Decide For new version use cargo login $CRATES_IO_TOKEN and cargo publish
 jobs:
@@ -10,7 +13,7 @@ jobs:
         os: [ubuntu-latest, macOS-latest, windows-latest]
     steps:
     - uses: actions/checkout@v1
-    - name: Install minimal Rust version
+    - name: Install Minimal Rust Version
       uses: actions-rs/toolchain@v1
       with:
         profile: minimal
@@ -29,17 +32,20 @@ jobs:
           args: --release --package todoco
 
     #### UPLOAD ARTIFACTS ####
-    - uses: actions/upload-artifact@v1
+    - name: Upload Mac Artifact
+      uses: actions/upload-artifact@v1
       if: matrix.os == 'macOS-latest'
       with:
         name: todoco.mac
         path: ./target/release/todoco
-    - uses: actions/upload-artifact@v1
+    - name: Upload Ubuntu Artifact
+      uses: actions/upload-artifact@v1
       if: matrix.os == 'ubuntu-latest'
       with:
         name: todoco.ubuntu
         path: ./target/release/todoco
-    - uses: actions/upload-artifact@v1
+    - name: Upload Windows Artifact
+      uses: actions/upload-artifact@v1
       if: matrix.os == 'windows-latest'
       with:
         name: todoco.windows

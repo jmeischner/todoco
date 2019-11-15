@@ -1,0 +1,24 @@
+name: Run Tests
+on: [push]
+
+# Todo: Decide For new version use cargo login $CRATES_IO_TOKEN and cargo publish
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macOS-latest, windows-latest]
+    steps:
+    - uses: actions/checkout@v1
+    - name: Install Minimal Rust Version
+      uses: actions-rs/toolchain@v1
+      with:
+        profile: minimal
+        toolchain: stable
+        default: true
+        override: true
+    - name: Execute Tests
+      uses: actions-rs/cargo@v1
+      with:
+        command: test
+        args: --verbose
