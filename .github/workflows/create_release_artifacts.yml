@@ -12,11 +12,7 @@ jobs:
     steps:
     - uses: actions/checkout@v1 
     - name: echo event
-      run: |
-        import json
-        result = json.loads("${{ github.event }}")
-        print(result)
-      shell: python
+      run: jq . $GITHUB_EVENT_PATH
     # - name: Install Minimal Rust Version
     #   uses: actions-rs/toolchain@v1
     #   with:
