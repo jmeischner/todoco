@@ -11,7 +11,7 @@ jobs:
     steps:
     - name: Install cargo
       if: matrix.os == 'macOS-latest'
-      run: curl https://sh.rustup.rs -sSf | sh -- -y
+      run: curl https://sh.rustup.rs -sSf | sh -y
     - uses: actions/checkout@v1
     - name: Run build
       run: cargo build --verbose
