@@ -8,6 +8,7 @@ on:
       - '.todocoignore'
       - '**/*.md'
       - 'todoco.*'
+      - '.install/**'
 
 # Todo: Decide For new version use cargo login $CRATES_IO_TOKEN and cargo publish
 jobs:
