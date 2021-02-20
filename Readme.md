@@ -14,3 +14,12 @@ curl -sL https://raw.githubusercontent.com/jmeischner/todoco/master/.install/ins
 ```
 
 To install the windows version go to **releases**, download the `todoco.exe` and put it in your `PATH`.
+
+
+### Locally with Cargo
+
+Run
+
+```bash
+cargo install --path todoco
+```
