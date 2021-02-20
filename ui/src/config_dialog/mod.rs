@@ -1,4 +1,4 @@
-use dialoguer::{Confirmation, Input};
+use dialoguer::{Confirm, Input};
 use std::env;
 use std::io::Result as IOResult;
 use types::Config;
@@ -40,11 +40,11 @@ fn get_project_name() -> IOResult<String> {
 
 fn get_use_gitignore() -> IOResult<bool> {
     // Todo: Use appconfig for prompt
-    let mut use_gitignore_input = Confirmation::new();
+    let mut use_gitignore_input = Confirm::new();
 
     use_gitignore_input
         .default(true)
-        .with_text("respect .gitignore?");
+        .with_prompt("respect .gitignore?");
 
     Ok(use_gitignore_input.interact()?)
 }
